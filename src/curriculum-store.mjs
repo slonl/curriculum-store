@@ -51,9 +51,24 @@ let meta = {}
 const dataspace = JSONTag.parse(fs.readFileSync(datafile).toString(),null,meta)
 sloIndex(dataspace)
 
+function countObjects() {
+    let count = 0
+    return Object.values(dataspace).map(list => list.length).reduce((count,length) => count + length, 0)
+}
+
+simplystore.get('/status/', (req, res, next) => 
+{
+    let result = {
+        memory: Math.round(process.memoryUsage().heapUsed / 1024 / 1024)+'MB',
+        datasets: Object.keys(dataspace),
+        objects: countObjects(dataspace)
+    }
+    res.setHeader('content-type','application/json')
+    res.send(JSON.stringify(result, null, 4)+"\n")
+})
+
 simplystore.run({
 	dataspace: dataspace,
 	meta: meta,
 	port: port
 })
-
