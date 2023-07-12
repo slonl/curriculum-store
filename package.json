@@ -1,0 +1,10 @@
+{
+	"name": "curriculum-store",
+	"scripts": {
+		"start": "node src/curriculum-store.mjs"
+	},
+	"dependencies": {
+		"@muze-nl/jsontag": "^0.8.3",
+		"@muze-nl/simplystore": "^0.1.4"
+	}
+}
