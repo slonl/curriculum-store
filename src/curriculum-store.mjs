@@ -2,7 +2,7 @@ import simplystore from '@muze-nl/simplystore'
 import fs from 'fs'
 import JSONTag from '@muze-nl/jsontag'
 
-const datafile = process.env.DATAFILE || 'curriculum.jsontag'
+const datafile = process.env.DATAFILE || 'data/curriculum.jsontag'
 const port     = process.env.NODE_PORT || 3000
 
 /*
@@ -13,7 +13,7 @@ const port     = process.env.NODE_PORT || 3000
  */
 function sloIndex(root) {
   Object.entries(root).forEach(([datatype,dataset]) => {
-  	if (datatype==='deprecated') {
+  	if (datatype==='Deprecated') {
   		return
   	}
   	console.log('linking '+datatype+' ('+dataset.length+')')
