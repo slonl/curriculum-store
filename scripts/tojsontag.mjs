@@ -4,6 +4,7 @@ import Curriculum from 'curriculum-js'
 import fs from 'fs'
 import repl from 'repl';
 import JSONTag from '@muze-nl/jsontag'
+import makeNiveauIndex from './niveau-index.mjs'
 
 const snakeToCamel = str =>
   str.replace(/([-_][a-z])/g, group =>
@@ -16,11 +17,41 @@ const snakeToCamel = str =>
 const capitalizeFirstLetter = str => 
   str[0].toUpperCase()+str.substring(1)
 
+const linkIds = ob => {
+    Object.keys(ob).forEach(prop => {
+        if (prop.substring(prop.length-3)=='_id') {
+            let newname = capitalizeFirstLetter(prop.substring(0, prop.length-3))
+            if (Array.isArray(ob[prop])) {
+                ob[newname] = ob[prop].map(id => curriculum.index.id[id])
+            } else {
+                ob[newname] = curriculum.index.id[ob[prop]]
+            }
+            delete ob[prop]
+        }
+    })
+    Object.keys(ob).forEach(prop => {
+        let camelCase = snakeToCamel(prop)
+        if (camelCase!==prop) {
+            ob[camelCase] = ob[prop]
+            delete ob[prop]
+        }
+        if (ob.types && ob.types.length) {
+            ob.types = ob.types.map(snakeToCamel)
+        }
+    })
+    if (ob.replacedBy) {
+        ob.replacedBy = ob.replacedBy.map(id => curriculum.index.id[id] || id)
+    }
+    if (ob.replaces) {
+        ob.replaces = ob.replaces.map(id => curriculum.index.id[id] || id)
+    }
+}
+
+// create new curriculum instance
+const curriculum = new Curriculum()
+
 // create an async function, so we can use await inside it
 async function main() {
-
-    // create new curriculum instance
-    const curriculum = new Curriculum()
     
     // read the list of all contexts from the file /curriculum-contexts.txt
     const schemas = fs.readFileSync('curriculum-contexts.txt','utf8')
@@ -38,6 +69,13 @@ async function main() {
         loadedSchemas = settledSchemas.map(promise => promise.value)
     })
     .then(() => {
+        curriculum.data.niveauIndex = makeNiveauIndex(curriculum)
+        // replace _id props with CamelCased props and id's with links
+        curriculum.data.niveauIndex.forEach(ob => {
+            linkIds(ob)
+        })
+    })
+    .then(() => {
         // set type, class and id for each object
         Object.keys(curriculum.index.id).forEach(id => {
             let type = curriculum.index.type[id]
@@ -45,33 +83,7 @@ async function main() {
             JSONTag.setAttribute(ob, 'class', capitalizeFirstLetter(snakeToCamel(type)))
             JSONTag.setAttribute(ob, 'id', '/uuid/'+id)
             // replace all entity_id properties with entity arrays of actual objects
-            Object.keys(ob).forEach(prop => {
-                if (prop.substring(prop.length-3)=='_id') {
-                    let newname = capitalizeFirstLetter(prop.substring(0, prop.length-3))
-                    if (Array.isArray(ob[prop])) {
-                        ob[newname] = ob[prop].map(id => curriculum.index.id[id])
-                    } else {
-                        ob[newname] = curriculum.index.id[ob[prop]]
-                    }
-                    delete ob[prop]
-                }
-            })
-            Object.keys(ob).forEach(prop => {
-                let camelCase = snakeToCamel(prop)
-                if (camelCase!==prop) {
-                    ob[camelCase] = ob[prop]
-                    delete ob[prop]
-                }
-                if (ob.types && ob.types.length) {
-                    ob.types = ob.types.map(snakeToCamel)
-                }
-            })
-            if (ob.replacedBy) {
-                ob.replacedBy = ob.replacedBy.map(id => curriculum.index.id[id] || id)
-            }
-            if (ob.replaces) {
-                ob.replaces = ob.replaces.map(id => curriculum.index.id[id] || id)
-            }
+            linkIds(ob)
         })
 
         Object.keys(curriculum.data).forEach(datatype => {
