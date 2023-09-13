@@ -61,7 +61,7 @@ async function main() {
 
     // load all contexts from the editor/ and master/ folders
     let loadedSchemas = schemas.map(
-        schema => curriculum.loadContextFromFile(schema, './editor/'+schema+'/context.json')
+        schema => curriculum.loadContextFromFile(schema, './master/'+schema+'/context.json')
     )
 
     // wait untill all contexts have been loaded, and return the promise values as schemas

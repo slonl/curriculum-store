@@ -14,7 +14,7 @@ init() {
     local root="${origin%/*}"
     # get contexts from file
     while read context; do
-    	 "${GIT}" clone --single-branch -b editor "${root}/${context}" "editor/${context}"
+    	 "${GIT}" clone --single-branch "${root}/${context}" "master/${context}"
     done < curriculum-contexts.txt
 }
 
