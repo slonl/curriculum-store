@@ -9,6 +9,7 @@ set -o pipefail # Return exit status of the last command in the pipe that exited
 
 init() {
     mkdir -p editor
+    mkdir -p master
     # get origin url
     local origin="$(git config --get remote.origin.url)"
     local root="${origin%/*}"
