@@ -9,3 +9,5 @@ curriculum-leerdoelenkaarten
 curriculum-syllabus
 curriculum-referentiekader
 curriculum-niveauhierarchie
+curriculum-fo
+curriculum-samenhang

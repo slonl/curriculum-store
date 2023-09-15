@@ -18,6 +18,10 @@ function sloIndex(root) {
             Object.entries(entity).forEach(([propertyName,propertyValue]) => {
                 if (Array.isArray(propertyValue) && typeof root[propertyName] !== 'undefined') {
                     propertyValue.forEach(linkedEntity => {
+                        if (!linkedEntity) {
+                            console.error('No entities for '+datatype, entity)
+                            return
+                        }
                         if (!linkedEntity.id) {
                             return
                         }
@@ -56,7 +60,9 @@ function indexRoots(data) {
         'ErkGebied',
         'ExamenprogrammaBgProfiel',
         'KerndoelVakleergebied',
-        'InhVakleergebied'
+        'InhVakleergebied',
+        'NhCategorie',
+        'FoDomein'
     ]
 
     function isObject(data)
