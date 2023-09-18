@@ -4,8 +4,8 @@
 		"start": "node src/curriculum-store.mjs"
 	},
 	"dependencies": {
-		"@muze-nl/jsontag": "^0.8.4",
-		"@muze-nl/simplystore": "^0.4.0",
+		"@muze-nl/jsontag": "^0.8.6",
+		"@muze-nl/simplystore": "^0.4.1",
 		"curriculum-js": "^0.4.1"
 	}
 }
