@@ -30,9 +30,7 @@ function sloIndex(root) {
             return
         }
         console.log('linking '+datatype+' ('+dataset.length+')')
-        let count = 0
         dataset.forEach(entity => {
-//        	console.log(count++)
             Object.entries(entity).forEach(([propertyName,propertyValue]) => {
             	if (!propertyValue) {
             		return
@@ -137,10 +135,6 @@ function indexRoots(data) {
 }
 
 function hideReplace(data) {
-    // maybe it is better to hide the replacedBy property
-    // so that deprecated items can still be found while
-    // tree-walking by default, only the backlink is hidden
-    // to prevent cycles in the data structure
     for (let a of Object.values(data)) {
         for (let e of a) {
             if (e.replaces) {
@@ -157,23 +151,9 @@ function hideReplace(data) {
     }
 }
 
-function initialize() {
-    hideReplace(dataspace) // prevents cycles in the data
-    sloIndex(dataspace) // adds reverse links from child to parent
-    indexRoots(dataspace) // adds the set of ultimate root entities for each child entity
-}
-
-
-initialize()
-
-
-/*
-	let value = dataspace.Doelniveau[0].Doel[0].replaces[0]
-	console.log(fastStringify(value))
-	let id = JSONTag.getAttribute(value, 'id')
-	console.log('id',id)
-	process.exit()
-*/
+hideReplace(dataspace) // prevents cycles in the data
+sloIndex(dataspace) // adds reverse links from child to parent
+indexRoots(dataspace) // adds the set of ultimate root entities for each child entity
 
 // write resultset to output
 let strData = fastStringify(dataspace)
