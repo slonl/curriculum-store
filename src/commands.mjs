@@ -1,3 +1,5 @@
+import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from 'array-where-select'
+
 export default {
 	patch: (dataspace, command, request, meta) => {
 		// changeHistory is command.value
@@ -48,17 +50,13 @@ export default {
 			return nextValue
 		}
 
-		function removeEntry() {
-			throw new Error('Not yet implemented')
-		}
-
 		for (let change of command.value) {
 			updatedEntities++
 			// apply change if possible
 			let entity = meta.index.id.get(change.id)?.deref()
 			switch(change.type) {
 				case 'insert':
-throw new Error('not yet implemented')
+throw new Error('insert not yet implemented',change)
 				break
 				case 'delete':
 					if (!entity) {
@@ -71,7 +69,7 @@ throw new Error('not yet implemented')
 						})
 						continue;
 					}
-throw new Error('not yet implemented')
+throw new Error('delete not yet implemented',change)
 				break
 				case 'patch':
 					if (!entity) {
@@ -101,15 +99,21 @@ throw new Error('not yet implemented')
 						}
 						let tobeRemoved = missingEntries(change.prevValue, change.newValue)
 						let tobeAdded = addedEntries(change.prevValue, change.newValue)
-						for (let v of tobeRemoved) {
-							removeEntry(currentValue, v)
-						}
+						currentValue = currentValue.filter(v => tobeRemoved.indexOf(v)===-1)
 						for (let v of tobeAdded) {
 							currentValue.push(v)
 						}
 						// now make sure the order of newValue matches that of currentValue
 						// ignore any values that aren't in newValue
-						entity[prop] = sortByOrder(change.newValue, currentValue)
+						let newValue = sortByOrder(change.newValue, currentValue)
+						if (prop==='niveaus') { // niveaus are sent as an array of Niveau title
+							prop = 'Niveau'
+							newValue = from(dataspace.Niveau)
+							.where({
+								title: anyOf(...newValue)
+							})
+						}
+						entity[prop] = newValue
 						//TODO: update parent/root references
 					} else {
 						if (currentValue!=change.prevValue) {
