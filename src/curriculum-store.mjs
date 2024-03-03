@@ -1,4 +1,5 @@
 import simplystore from '@muze-nl/simplystore'
+import process from 'node:process'
 
 const datafile     = process.env.DATA_FILE || './data/data.jsontag'
 const commandsFile = process.env.COMMANDS || './src/commands.mjs'
