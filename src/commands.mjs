@@ -18,10 +18,6 @@ export default {
 			return b.filter(x => !a.includes(x))
 		}
 
-		function getShortID(id) {
-			return id.substring('https://opendata.slo.nl/curriculum'.length)
-		}
-
 		function sortByOrder(order, currValue) {
 			let holes = []
 			let sortValue = []
@@ -52,64 +48,96 @@ export default {
 			return nextValue
 		}
 
+		function removeEntry() {
+			throw new Error('Not yet implemented')
+		}
+
 		for (let change of command.value) {
 			updatedEntities++
 			// apply change if possible
-			let shortID = getShortID(change.id)
-			let entity = meta.index.id.get(shortID)?.deref()
-			if (!entity) {
-				errors.push({
-					code: 404,
-					message: `Entity not found: ${change.id}`,
-					details: {
-						id: change.id
+			let entity = meta.index.id.get(change.id)?.deref()
+			switch(change.type) {
+				case 'insert':
+throw new Error('not yet implemented')
+				break
+				case 'delete':
+					if (!entity) {
+						errors.push({
+							code: 404,
+							message: `Entity not found: ${change.id}`,
+							details: {
+								id: change.id
+							}
+						})
+						continue;
 					}
-				})
-				continue;
-			}
-			let prop = change.property
-			let currentValue = entity[prop]
-			if (Array.isArray(currentValue)) {
-				if (!Array.isArray(newValue)) {
+throw new Error('not yet implemented')
+				break
+				case 'patch':
+					if (!entity) {
+						errors.push({
+							code: 404,
+							message: `Entity not found: ${change.id}`,
+							details: {
+								id: change.id
+							}
+						})
+						continue;
+					}
+					let prop = change.property
+					let currentValue = entity[prop]
+					if (Array.isArray(currentValue)) {
+						if (!Array.isArray(change.newValue)) {
+							errors.push({
+								code: 406,
+								message: `Property ${prop} expected to be an Array`,
+								details: {
+									id: change.id,
+									prop,
+									value: change.newValue
+								}
+							})
+							continue;
+						}
+						let tobeRemoved = missingEntries(change.prevValue, change.newValue)
+						let tobeAdded = addedEntries(change.prevValue, change.newValue)
+						for (let v of tobeRemoved) {
+							removeEntry(currentValue, v)
+						}
+						for (let v of tobeAdded) {
+							currentValue.push(v)
+						}
+						// now make sure the order of newValue matches that of currentValue
+						// ignore any values that aren't in newValue
+						entity[prop] = sortByOrder(change.newValue, currentValue)
+						//TODO: update parent/root references
+					} else {
+						if (currentValue!=change.prevValue) {
+							// for now this is an error, should try to merge
+							errors.push({
+								code: 409,
+								message: `Property ${prop} has changed`,
+								details: {
+									id: change.id,
+									prop,
+									value: currentValue,
+									expected: change.prevValue
+								}
+							})
+							continue
+						}
+						entity[prop] = change.newValue
+					}
+				break
+				default:
 					errors.push({
-						code: 406,
-						message: `Property ${prop} expected to be an Array`,
+						code: 405,
+						message: `Patch type not supported: ${change.type}`,
 						details: {
-							id: change.id,
-							prop,
-							value: newValue
+							change
 						}
 					})
-					continue;
-				}
-				let tobeRemoved = missingEntries(change.prevValue, change.newValue)
-				let tobeAdded = addedEntries(change.prevValue, change.newValue)
-				for (v of tobeRemoved) {
-					removeEntry(currentValue, v)
-				}
-				for (v of tobeAdded) {
-					currentValue.push(v)
-				}
-				// now make sure the order of newValue matches that of currentValue
-				// ignore any values that aren't in newValue
-				entity[prop] = sortByOrder(change.newValue, currentValue)
-				//TODO: update parent/root references
-			} else {
-				if (currentValue!=change.prevValue) {
-					// for now this is an error, should try to merge
-					errors.push({
-						code: 409,
-						message: `Property ${prop} has changed`,
-						details: {
-							id: change.id,
-							prop,
-							value: currentValue,
-							expected: change.prevValue
-						}
-					})
-					continue
-				}
-				entity[prop] = change.newValue
+				break
 			}
 		}
 		if (errors.length) {
