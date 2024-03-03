@@ -1,11 +1,15 @@
 {
 	"name": "curriculum-store",
 	"scripts": {
-		"start": "node src/curriculum-store.mjs"
+		"start": "node src/curriculum-store.mjs",
+		"lint": "eslint \"src/*\""
 	},
 	"dependencies": {
 		"@muze-nl/jsontag": "^0.9.1",
-		"@muze-nl/simplystore": "0.5.4",
+		"@muze-nl/simplystore": "0.5.5",
 		"curriculum-js": "^0.4.1"
+	},
+	"devDependencies": {
+		"eslint": "^8.57.0"
 	}
 }
