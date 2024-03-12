@@ -6,7 +6,7 @@
 	},
 	"dependencies": {
 		"@muze-nl/jsontag": "^0.9.2",
-		"@muze-nl/simplystore": "^0.6.1",
+		"@muze-nl/simplystore": "^0.6.2",
 		"curriculum-js": "^0.4.1"
 	},
 	"devDependencies": {
