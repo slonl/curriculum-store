@@ -1,5 +1,5 @@
 import JSONTag from '@muze-nl/jsontag'
-import fastStringify from '@muze-nl/simplystore/src/fastStringify.mjs'
+import serialize, { stringify } from '@muze-nl/od-jsontag/src/serialize.mjs'
 import fs from 'node:fs'
 
 if (process.argv.length<=3) {
@@ -25,6 +25,7 @@ let dataspace = JSONTag.parse(input, null, meta)
  * only if you explicitly select() it
  */
 function sloIndex(root) {
+    console.log(Object.keys(root))
     Object.entries(root).forEach(([datatype,dataset]) => {
         if (datatype==='Deprecated' || datatype==="NiveauIndex") {
             return
@@ -38,14 +39,14 @@ function sloIndex(root) {
                 if (Array.isArray(propertyValue) && typeof root[propertyName] !== 'undefined') {
                     propertyValue.forEach(linkedEntity => {
                         if (!linkedEntity) {
-                            console.error('No entities for '+datatype, entity)
+//                            console.error('No entities for '+datatype, entity)
                             return
                         }
                         if (!linkedEntity.id) {
                             return
                         }
                         if (typeof linkedEntity[datatype] === 'undefined') {
-                        	console.log('defining',datatype,linkedEntity.id)
+//                        	console.log('defining',datatype,linkedEntity.id)
                             Object.defineProperty(linkedEntity, datatype, {
                                 value: [],
                                 enumerable: false
@@ -58,7 +59,7 @@ function sloIndex(root) {
                         return
                     }
                     if (typeof propertyValue[datatype] === 'undefined') {
-                       	console.log('defining',datatype,propertyValue.id)
+//                       	console.log('defining',datatype,propertyValue.id)
                         Object.defineProperty(propertyValue, datatype, {
                             value: [],
                             enumerable: false
@@ -122,6 +123,7 @@ function indexRoots(data) {
         })
     }
 
+    console.log('Indexing roots')
     roots.forEach((rootType) => {
         if (Array.isArray(data[rootType])) {
             for ( let e of data[rootType] ) {
@@ -154,10 +156,10 @@ function hideReplace(data) {
 hideReplace(dataspace) // prevents cycles in the data
 sloIndex(dataspace) // adds reverse links from child to parent
 indexRoots(dataspace) // adds the set of ultimate root entities for each child entity
+console.log('done')
 
-// write resultset to output
-let strData = fastStringify(dataspace)
+let bData = serialize(dataspace)
 
-fs.writeFileSync(outputFile, strData)
+fs.writeFileSync(outputFile, bData)
 
 console.log('Converted data written to ',outputFile)
