@@ -208,6 +208,9 @@ export default {
 					// only alter what is in the set of all niveaus for this command
 				}
 				entity[prop] = newValue
+				if (!entity.unreleased) { // changes in arrays always result in marking released entities dirty
+					entity.dirty = true
+				}
 
 				// change root. find remaining roots of any tobeRemoved entities
 				// for each root, walk until you find tobeRemoved item, if not, remove root
@@ -238,7 +241,7 @@ export default {
 					}
 				}
 			} else {
-				if (currentValue && currentValue!=change.prevValue) {
+				if (currentValue && currentValue!=change.prevValue && currentValue!=change.newValue) {
 					// for now this is an error, should try to merge
 					errors.push({
 						code: 409,
@@ -253,6 +256,10 @@ export default {
 					continue
 				}
 				entity[prop] = change.newValue
+				if (!entity.unreleased && (typeof change.dirty=='undefined' || change.dirty==true)) {
+					// only skip setting dirty on unreleased entities or if dirty is explicitly defined and falsy
+					entity.dirty = true
+				}
 			}
 		}
 		if (errors.length) {
