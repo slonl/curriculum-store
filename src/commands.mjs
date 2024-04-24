@@ -109,7 +109,7 @@ export default {
 			let type = child['@type']
 			let root = parent.root
 			for (let key in child) {
-				if (key[0]=='@') {
+				if (key[0]=='@' || key[0]=='$') {
 					delete child[key]
 				}
 			}
@@ -141,10 +141,33 @@ export default {
 				value: [parent]
 			})
 			dataspace[type].push(child)
-
 			let proxy = dataspace[type][dataspace[type].length-1]
+
+			Object.entries(child).forEach(prop => {
+				if (Array.isArray(child[prop])) {
+					if (typeof child[prop].map == 'undefined') {
+						errors.push({
+							code: 500,
+							message: 'daar',
+							details: {
+								prop,
+								value: child[prop]
+							}
+						})
+						return
+					}
+					child[prop] = child[prop].map(v => {
+						if (v.$mark=='inserted') {
+							v = addEntity(v, child)
+						}
+						return v
+					})
+				}
+			})
+
 			child = proxy
 			meta.index.id.set('/uuid/'+child.id, child)
+
 			return child
 		}
 
@@ -186,18 +209,22 @@ export default {
 				resolveLinks(change.newValue)
 				resolveLinks(change.prevValue)
 				let tobeRemoved = missingEntries(change.prevValue, change.newValue)
-				let tobeAdded = addedEntries(change.prevValue, change.newValue)
-				currentValue = currentValue.filter(v => tobeRemoved.indexOf(v)===-1)
-				for (let v of tobeAdded) {
-					if (!hasIndex(v.id)) {
+				if (typeof change.newValue.map == 'undefined') {
+					errors.push({
+						code: 500,
+						message: 'hier',
+						details: {
+							value: change.newValue
+						}
+					})
+					continue
+				}
+				let newValue = change.newValue.map(v => {
+					if (v.$mark=='inserted') {
 						v = addEntity(v, entity)
 					}
-					currentValue.unshift(v)
-				}
-				// now make sure the order of newValue matches that of currentValue
-				// ignore any values that aren't in newValue
-				// FIXME: this doesn't work - inserted entries are added at the end
-				let newValue = sortByOrder(change.newValue, currentValue)
+					return v
+				})
 				if (prop==='niveaus') { // niveaus are sent as an array of Niveau title
 					prop = 'Niveau'
 					newValue = from(dataspace.Niveau)
