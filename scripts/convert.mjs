@@ -82,11 +82,12 @@ function indexRoots(data) {
         'FoDomein',
         'RefVakleergebied',
         'ErkGebied',
+	'ErkTaalprofiel',
         'ExamenprogrammaBgProfiel',
         'KerndoelVakleergebied',
         'InhVakleergebied',
         'NhCategorie',
-        'FoDomein'
+        'FoSet'
     ]
 
     function isObject(data)
