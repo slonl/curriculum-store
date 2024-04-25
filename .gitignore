@@ -2,3 +2,5 @@ scripts/editor
 package-lock.json
 data/data.jsontag
 node_modules/
+command-log.jsontag
+command-status.jsontag
