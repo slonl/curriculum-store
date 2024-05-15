@@ -27,7 +27,7 @@ let dataspace = JSONTag.parse(input, null, meta)
 function sloIndex(root) {
     console.log(Object.keys(root))
     Object.entries(root).forEach(([datatype,dataset]) => {
-        if (datatype==='Deprecated' || datatype==="NiveauIndex") {
+        if (datatype==='Deprecated' || datatype==="NiveauIndex" || datatype=='schema') {
             return
         }
         console.log('linking '+datatype+' ('+dataset.length+')')
@@ -73,22 +73,6 @@ function sloIndex(root) {
 }
 
 function indexRoots(data) {
-    //@TODO: root entities should be defined in the context.json
-    //for each curriculum context
-    const roots = [
-        'Examenprogramma',
-        'LdkVakleergebied',
-        'Syllabus',
-        'FoDomein',
-        'RefVakleergebied',
-        'ErkGebied',
-	'ErkTaalprofiel',
-        'ExamenprogrammaBgProfiel',
-        'KerndoelVakleergebied',
-        'InhVakleergebied',
-        'NhCategorie',
-        'FoSet'
-    ]
 
     function isObject(data)
     {
@@ -125,20 +109,29 @@ function indexRoots(data) {
     }
 
     console.log('Indexing roots')
-    roots.forEach((rootType) => {
-        if (Array.isArray(data[rootType])) {
-            for ( let e of data[rootType] ) {
-                registerRoot(e, e)
+    for (let schema in data.schema) {
+        for (let entityType in data.schema[schema]) {
+            if (!data.schema[schema][entityType].root) {
+                continue
             }
-        } else {
-            console.error(rootType+' not found')
+            let rootType = entityType
+            if (Array.isArray(data[rootType])) {
+                for ( let e of data[rootType] ) {
+                    registerRoot(e, e)
+                }
+            } else {
+                console.error(rootType+' not found')
+            }
         }
-    })
+    }
 
 }
 
 function hideReplace(data) {
     for (let a of Object.values(data)) {
+        if (!Array.isArray(a)) {
+            continue
+        }
         for (let e of a) {
             if (e.replaces) {
                 Object.defineProperty(e, 'replaces', {

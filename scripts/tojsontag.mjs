@@ -49,6 +49,12 @@ const linkIds = ob => {
 
 // create new curriculum instance
 const curriculum = new Curriculum()
+let parsed = {}
+let storeSchema = {
+    contexts: {},
+    types: {},
+    properties: {}
+}
 
 // create an async function, so we can use await inside it
 async function main() {
@@ -93,7 +99,71 @@ async function main() {
                 delete curriculum.data[datatype]
             }
         })
+    })
+    .then(() => {
+        return Promise.allSettled(loadedSchemas.map(async schema => {
+            let name = schema.$id.substring('https://opendata.slo.nl/curriculum/schemas/curriculum-'.length)
+            name = name.substring(0, name.length - '/context.json'.length)
+            parsed[name] = await curriculum.parseSchema(schema)
 
+            let cName = capitalizeFirstLetter(snakeToCamel(name))
+            storeSchema.contexts[cName] = {
+                label: name
+            }
+            JSONTag.setAttribute(storeSchema.contexts[cName], 'id', '/schema/contexts/'+cName+'/')
+            let typeDef = {
+                label: '',
+                properties: {},
+                children: {}
+            }
+            Object.keys(parsed[name].definitions).forEach(type => {
+                if (['inhoud','uuid','uuidArray','baseid','base','allEntities'].indexOf(type)!=-1) {
+                    return
+                }
+                let cType = capitalizeFirstLetter(snakeToCamel(type))
+                if (!storeSchema.types[cType]) {
+                    storeSchema.types[cType] = JSON.parse(JSON.stringify(typeDef))
+                }
+                if (!JSONTag.getAttribute(storeSchema.types[cType], 'id')) {
+                    JSONTag.setAttribute(storeSchema.types[cType], 'id', '/schema/types/'+cType+'/')
+                }
+                if (['Examenprogramma','Vakleergebied','LdkVakleergebied','Syllabus','FoDomein','RefVakleergebied','ErkGebied','ErkTaalprofiel',
+                    'ExamenprogrammaBgProfiel','KerndoelVakleergebied','InhVakleergebied','NhCategorie','FoSet'].includes(cType)) {
+                    storeSchema.types[cType].root = true
+                }
+                let cTypeDef = storeSchema.types[cType]
+                cTypeDef.label = type
+                Object.keys(parsed[name].definitions[type].properties).forEach(prop => {
+                    if (prop.substring(prop.length-3)=='_id') {
+                        prop = prop.substring(0, prop.length-3)
+                        let CamelProp = capitalizeFirstLetter(snakeToCamel(prop))
+                        if (!storeSchema.types[CamelProp]) {
+                            storeSchema.types[CamelProp] = JSON.parse(JSON.stringify(typeDef))
+                            storeSchema.types[CamelProp].label = prop
+                        }
+                        cTypeDef.children[CamelProp] = storeSchema.types[CamelProp]
+                    } else {
+                        if (!storeSchema.properties[prop]) {
+                            storeSchema.properties[prop] = parsed[name].definitions[type].properties[prop]
+                            if (parsed[name].definitions[type].required?.includes(prop)) {
+                                storeSchema.properties[prop].required = true
+                            }
+                            if (['replaces','replacedBy','unreleased','dirty','id'].indexOf(prop)!=-1) {
+                                storeSchema.properties[prop].editable = false
+                            }
+                            JSONTag.setAttribute(storeSchema.properties[prop], 'id','/schema/properties/'+prop+'/')
+                        }
+                        cTypeDef.properties[prop] = storeSchema.properties[prop]
+                    }
+                })
+                storeSchema.contexts[cName][cType] = cTypeDef
+                storeSchema.types[cType] = cTypeDef
+            })
+            return true
+        }))
+    })
+    .then(() => {
+        curriculum.data.schema = storeSchema
         // save as single jsontag blob
         let fileData = JSONTag.stringify(curriculum.data, null, 4)
         fs.writeFileSync('../data/curriculum.jsontag', fileData);
