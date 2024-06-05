@@ -1,6 +1,7 @@
 import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from 'jaqt'
 import JSONTag from '@muze-nl/jsontag'
 import {source,isProxy} from '@muze-nl/od-jsontag/src/symbols.mjs'
+import applyValues from 'array-apply-partial-diff'
 
 function findChild(root, child, type) {
 	// walk over children of root untill you find child
@@ -50,36 +51,6 @@ export default {
 			return b.filter(x => !a.includes(x))
 		}
 
-		function sortByOrder(order, currValue) {
-			let holes = []
-			let sortValue = []
-			let i=0
-			for(let v of currValue) {
-				if (order.indexOf(v)==-1) {
-					holes.push(i)
-				} else {
-					sortValue.push(v)
-				}
-				i++
-			}
-			let sortByObject = (order.reduce((obj,item,index) => { return { ...obj, [item]:index }}, {}))
-			sortValue.sort((a,b) => sortByObject[a] - sortByObject[b])
-			let nextValue = []
-			let currIndex = 0
-			for (let hole of holes) {
-				while (hole>=currIndex && currIndex<sortValue.length) {
-					nextValue.push(sortValue[currIndex])
-					currIndex++
-				}
-				nextValue.push(currValue[hole])
-			}
-			while (currIndex<sortValue.length) {
-				nextValue.push(sortValue[currIndex])
-				currIndex++
-			}
-			return nextValue
-		}
-
 		function resolveLinks(arr) {
 			arr = arr.map(v => {
 				if (v instanceof JSONTag.Link) {
@@ -89,6 +60,73 @@ export default {
 				}
 				return v
 			})
+		}
+
+		function appendEntity(child, type, root=null) {
+			if (!child.id) {
+				if (!child.uuid) {
+					throw new Error('new entity missing id and uuid')
+				}
+				child.id = child.uuid
+				delete child.uuid
+			} else {
+				if (child.id.substring(0,6)=='/uuid/') {
+					child.id = child.id.substring(6)
+				}
+			}
+			for (let key in child) {
+				if (key[0]=='@' || key[0]=='$') {
+					delete child[key]
+				}
+			}
+			try {
+				JSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
+			} catch(e) {
+				throw new Error(e.message+' id '+JSON.stringify(child))
+			}
+			try {
+				JSONTag.setAttribute(child, 'class', type)
+			} catch(e) {
+				throw new Error(e.message+' class '+JSON.stringify(type))
+			}
+			if (root && !Array.isArray(root)) { // make sure root is always an array, if set
+				root = [root]
+			}
+			if (!child.root || !Array.isArray(child.root)) {
+				// fix incorrect or missing child.root: must always exist and be a non-enumerable array
+				// in particular orphans may not have a .root property, so add it here
+				Object.defineProperty(child, 'root', {
+					configurable: true,
+					writable: true,
+					enumerable: false,
+					value: child.root ? [child.root] : []
+				})
+			}
+			if (root) {
+				// merge root and child.root, only add missing entries
+				let current = child.root.map(e => e.id)
+				root.filter(e => !current.includes(e.id)).forEach(e => {
+					child.root.push(e)
+				})
+			}
+			dataspace[type].push(child)
+			let proxy = dataspace[type][dataspace[type].length-1]
+
+			Object.entries(child).forEach(prop => {
+				if (Array.isArray(child[prop])) {
+					child[prop] = child[prop].map(v => {
+						if (v.$mark=='inserted') {
+							v = addEntity(v, child)
+						}
+						return v
+					})
+				}
+			})
+
+			child = proxy
+			meta.index.id.set('/uuid/'+child.id, child)
+
+			return child
 		}
 
 		function addEntity(child, parent) {
@@ -114,22 +152,6 @@ export default {
 				}
 			}
 			child.unreleased = true
-			try {
-				JSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
-			} catch(e) {
-				throw new Error(e.message+' id '+JSON.stringify(child))
-			}
-			try {
-				JSONTag.setAttribute(child, 'class', type)
-			} catch(e) {
-				throw new Error(e.message+' class '+JSON.stringify(type))
-			}
-			Object.defineProperty(child, 'root', {
-				configurable: true,
-				writable: true,
-				enumerable: false,
-				value: root
-			})
 			let parentType = JSONTag.getAttribute(parent[source] ?? parent, 'class')
 			if (!parentType) {
 				throw new Error('No parent type found',{ details: [parent, parent[source]] })
@@ -140,153 +162,135 @@ export default {
 				enumerable: false,
 				value: [parent]
 			})
-			dataspace[type].push(child)
-			let proxy = dataspace[type][dataspace[type].length-1]
-
-			Object.entries(child).forEach(prop => {
-				if (Array.isArray(child[prop])) {
-					if (typeof child[prop].map == 'undefined') {
-						errors.push({
-							code: 500,
-							message: 'daar',
-							details: {
-								prop,
-								value: child[prop]
-							}
-						})
-						return
-					}
-					child[prop] = child[prop].map(v => {
-						if (v.$mark=='inserted') {
-							v = addEntity(v, child)
-						}
-						return v
-					})
-				}
-			})
-
-			child = proxy
-			meta.index.id.set('/uuid/'+child.id, child)
-
-			return child
+			return appendEntity(child, type, root)
 		}
 
 		let prop, entity, currentValue
 
 		for (let change of command.value) {
 			updatedEntities++
-			// apply change if possible
-			entity = fromIndex(change.id)
-			if (!entity) {
-				errors.push({
-					code: 404,
-					message: `Entity not found: ${change.id}`,
-					details: {
-						id: change.id
-					}
-				})
-				continue;
-			}
-			prop = change.property
-			currentValue = entity[prop]
-			if (Array.isArray(change.newValue) || Array.isArray(currentValue)) {
-				if (!currentValue || !Array.isArray(currentValue)) {
-					// in case this is the first new child of this type
-					currentValue = []
-				}
-				if (!Array.isArray(change.newValue)) {
-					errors.push({
-						code: 406,
-						message: `Property ${prop} expected to be an Array`,
-						details: {
-							id: change.id,
-							prop,
-							value: change.newValue
+			switch(change.name) {
+				case 'newEntity':
+					/*  change = {
+							name: 'addEntity',
+							entityType: 'Examenprogramma',
+							entity: {
+								id: {uuid},
+								title: ...
+							}
 						}
-					})
-					continue;
-				}
-				resolveLinks(change.newValue)
-				resolveLinks(change.prevValue)
-				let tobeRemoved = missingEntries(change.prevValue, change.newValue)
-				if (typeof change.newValue.map == 'undefined') {
-					errors.push({
-						code: 500,
-						message: 'hier',
-						details: {
-							value: change.newValue
-						}
-					})
-					continue
-				}
-				let newValue = change.newValue.map(v => {
-					if (v.$mark=='inserted') {
-						v = addEntity(v, entity)
-					}
-					return v
-				})
-				if (prop==='niveaus') { // niveaus are sent as an array of Niveau title
-					prop = 'Niveau'
-					newValue = from(dataspace.Niveau)
-					.where({
-						title: anyOf(...newValue)
-					})
-					//FIXME: not all niveaus may be sent with the command
-					// only alter what is in the set of all niveaus for this command
-				}
-				entity[prop] = newValue
-				if (!entity.unreleased) { // changes in arrays always result in marking released entities dirty
-					entity.dirty = true
-				}
+					*/
+					appendEntity(change.entity, change['@type'], [change.entity])
 
-				// change root. find remaining roots of any tobeRemoved entities
-				// for each root, walk until you find tobeRemoved item, if not, remove root
-				for (let child of tobeRemoved) {
-					if (!child.root) {
-						throw new Error('child has no root '+JSON.stringify(child))
+				break
+				case 'updateEntity':
+				default:
+					// apply change if possible
+					entity = fromIndex(change.id)
+					if (!entity) {
+						errors.push({
+							code: 404,
+							message: `Entity not found: ${change.id}`,
+							details: {
+								id: change.id
+							}
+						})
+						continue;
 					}
-					let roots = child.root.slice()
-					let childType = JSONTag.getAttribute(child[source] ?? child, 'class')
-					if (!childType) {
-						throw new Error('No child type found', {details: child})
-					}
-					for (let root of child.root) {
-						if (!findChild(root, child, childType)) {
-							roots.splice(roots.indexOf(root),1)
+					prop = change.property
+					currentValue = entity[prop]
+					if (Array.isArray(change.newValue) || Array.isArray(currentValue)) {
+						if (!currentValue || !Array.isArray(currentValue)) {
+							// in case this is the first new child of this type
+							currentValue = []
 						}
-					}
-					child.root = roots
-					if (child.root.length==0) {
-						child.deleted = true // mark for deprecation
-					}
+						if (!Array.isArray(change.newValue)) {
+							errors.push({
+								code: 406,
+								message: `Property ${prop} expected to be an Array`,
+								details: {
+									id: change.id,
+									prop,
+									value: change.newValue
+								}
+							})
+							continue;
+						}
+						resolveLinks(change.newValue)
+						resolveLinks(change.prevValue)
+						let tobeRemoved = missingEntries(change.prevValue, change.newValue)
+						let newValue = change.newValue.map(v => {
+							if (v.$mark=='inserted') {
+								v = addEntity(v, entity)
+							}
+							return v
+						})
+						if (prop==='niveaus') { // niveaus are sent as an array of Niveau title
+							prop = 'Niveau'
+							newValue = from(dataspace.Niveau)
+							.where({
+								title: anyOf(...newValue)
+							})
+						}
+						let completeArray = entity[prop]?.map(e => e.id) || []
+						let prevValue = change.prevValue?.map(e => e.id) || []
+						let changedValue = newValue.map(e => e.id)
+						let appliedArray = applyValues(completeArray, prevValue, changedValue)
+						entity[prop] = appliedArray.map(id => fromIndex(id))
+						if (!entity.unreleased) { // changes in arrays always result in marking released entities dirty
+							entity.dirty = true
+						}
 
-					// change {parent}, remove entity from tobeRemoved[entity[type]]
-					let entityType = JSONTag.getAttribute(entity[source] ?? entity, 'class')
-					child[entityType] = child[entityType].filter(e => e.id!=entity.id)
-					if (child[entityType].length==0) {
-						delete child[entityType]
-					}
-				}
-			} else {
-				if (currentValue && currentValue!=change.prevValue && currentValue!=change.newValue) {
-					// for now this is an error, should try to merge
-					errors.push({
-						code: 409,
-						message: `Property ${prop} has changed`,
-						details: {
-							id: change.id,
-							prop,
-							value: currentValue,
-							expected: change.prevValue
+						// change root. find remaining roots of any tobeRemoved entities
+						// for each root, walk until you find tobeRemoved item, if not, remove root
+						for (let child of tobeRemoved) {
+							if (!child.root) {
+								throw new Error('child has no root '+JSON.stringify(child))
+							}
+							let roots = child.root.slice()
+							let childType = JSONTag.getAttribute(child[source] ?? child, 'class')
+							if (!childType) {
+								throw new Error('No child type found', {details: child})
+							}
+							for (let root of child.root) {
+								if (!findChild(root, child, childType)) {
+									roots.splice(roots.indexOf(root),1)
+								}
+							}
+							child.root = roots
+							if (child.root.length==0) {
+								child.deleted = true // mark for deprecation
+							}
+
+							// change {parent}, remove entity from tobeRemoved[entity[type]]
+							let entityType = JSONTag.getAttribute(entity[source] ?? entity, 'class')
+							child[entityType] = child[entityType].filter(e => e.id!=entity.id)
+							if (child[entityType].length==0) {
+								delete child[entityType]
+							}
 						}
-					})
-					continue
-				}
-				entity[prop] = change.newValue
-				if (!entity.unreleased && (typeof change.dirty=='undefined' || change.dirty==true)) {
-					// only skip setting dirty on unreleased entities or if dirty is explicitly defined and falsy
-					entity.dirty = true
-				}
+					} else {
+						if (currentValue && currentValue!=change.prevValue && currentValue!=change.newValue) {
+							// for now this is an error, should try to merge
+							errors.push({
+								code: 409,
+								message: `Property ${prop} has changed`,
+								details: {
+									id: change.id,
+									prop,
+									value: currentValue,
+									expected: change.prevValue
+								}
+							})
+							continue
+						}
+						entity[prop] = change.newValue
+						if (!entity.unreleased && (typeof change.dirty=='undefined' || change.dirty==true)) {
+							// only skip setting dirty on unreleased entities or if dirty is explicitly defined and falsy
+							entity.dirty = true
+						}
+					}
+				break
 			}
 		}
 		if (errors.length) {
