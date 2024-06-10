@@ -4,7 +4,61 @@ import Curriculum from 'curriculum-js'
 import fs from 'fs'
 import repl from 'repl';
 import JSONTag from '@muze-nl/jsontag'
-import makeNiveauIndex from './niveau-index.mjs'
+
+const curriculum = new Curriculum()
+let parsed = {}
+let storeSchema = {
+    contexts: {},
+    types: {},
+    properties: {}
+}
+
+function flatten(arr) {
+    let result = new Set()
+    arr.forEach(v => {
+        if (Array.isArray(v)) {
+            flatten(v).forEach(v => result.add(v))
+        } else {
+            result.add(v)
+        }
+    })
+    return Array.from(result)
+}
+
+function addNiveauIndex(entity) {
+    let type = JSONTag.getAttribute(entity, 'class')
+    let children = curriculum.data.schema.types[type].children
+    let niveaus = []
+    Object.keys(children).forEach(childType => {
+        if (childType=='Vakleergebied') {
+            return // is not a true parent in any case
+        }
+        if (entity[childType]) {
+            niveaus.push(entity[childType].map(child => addNiveauIndex(child)))
+        }
+    })
+    if (entity.NiveauIndex && entity.NiveauIndex.length) {
+        niveaus.push(entity.NiveauIndex)
+    }
+    if (entity.Niveau) {
+        // @FIXME: probably only set entity.Niveau in NiveauIndex
+        niveaus.push(entity.Niveau)
+    }
+    niveaus = flatten(niveaus).filter(Boolean)
+    if (niveaus.length) {
+        entity.NiveauIndex = niveaus
+    }
+    return niveaus
+}
+
+const makeNiveauIndex = () => {
+    Object.entries(curriculum.data.schema.types).forEach(([typeName, typeData]) => {
+        if (!typeData.root) {
+            return
+        }
+        curriculum.data[typeName].forEach(addNiveauIndex)
+    })
+}
 
 const snakeToCamel = str =>
   str.replace(/([-_][a-z])/g, group =>
@@ -48,13 +102,6 @@ const linkIds = ob => {
 }
 
 // create new curriculum instance
-const curriculum = new Curriculum()
-let parsed = {}
-let storeSchema = {
-    contexts: {},
-    types: {},
-    properties: {}
-}
 
 // create an async function, so we can use await inside it
 async function main() {
@@ -73,13 +120,6 @@ async function main() {
     // wait untill all contexts have been loaded, and return the promise values as schemas
     Promise.allSettled(loadedSchemas).then((settledSchemas) => {
         loadedSchemas = settledSchemas.map(promise => promise.value)
-    })
-    .then(() => {
-        curriculum.data.niveauIndex = makeNiveauIndex(curriculum)
-        // replace _id props with CamelCased props and id's with links
-        curriculum.data.niveauIndex.forEach(ob => {
-            linkIds(ob)
-        })
     })
     .then(() => {
         // set type, class and id for each object
@@ -164,6 +204,7 @@ async function main() {
     })
     .then(() => {
         curriculum.data.schema = storeSchema
+        makeNiveauIndex(curriculum.data)
         // save as single jsontag blob
         let fileData = JSONTag.stringify(curriculum.data, null, 4)
         fs.writeFileSync('../data/curriculum.jsontag', fileData);
