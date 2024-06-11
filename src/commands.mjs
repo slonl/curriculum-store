@@ -270,6 +270,8 @@ export default {
 							}
 						}
 					} else {
+/*
+@FIXME: re-enable this check when merging is implemented
 						if (currentValue && currentValue!=change.prevValue && currentValue!=change.newValue) {
 							// for now this is an error, should try to merge
 							errors.push({
@@ -284,6 +286,7 @@ export default {
 							})
 							continue
 						}
+*/
 						entity[prop] = change.newValue
 						if (!entity.unreleased && (typeof change.dirty=='undefined' || change.dirty==true)) {
 							// only skip setting dirty on unreleased entities or if dirty is explicitly defined and falsy
