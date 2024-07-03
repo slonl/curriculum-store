@@ -182,6 +182,14 @@ async function main() {
                             storeSchema.types[CamelProp].label = prop
                         }
                         cTypeDef.children[CamelProp] = storeSchema.types[CamelProp]
+			if (CamelProp=='Vakleergebied') {
+				let vtype = parsed[name].definitions[type].properties.vakleergebied_id.type
+				if (vtype!='array') {
+					storeSchema.types[cType].properties.Vakleergebied = {
+						type: "object"
+					}
+				}
+			}
                     } else {
                         if (!storeSchema.properties[prop]) {
                             storeSchema.properties[prop] = parsed[name].definitions[type].properties[prop]
