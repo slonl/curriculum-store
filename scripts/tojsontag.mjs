@@ -27,6 +27,9 @@ function flatten(arr) {
 
 function addNiveauIndex(entity) {
     let type = JSONTag.getAttribute(entity, 'class')
+    if (!type) {
+        return
+    }
     let children = curriculum.data.schema.types[type].children
     let niveaus = []
     Object.keys(children).forEach(childType => {
