@@ -9,5 +9,4 @@ simplystore.run({
 	datafile,
 	port,
 	commandsFile,
-	//maxWorkers: 2
 })
