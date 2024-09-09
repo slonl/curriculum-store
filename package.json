@@ -5,9 +5,9 @@
 		"lint": "eslint \"src/*\""
 	},
 	"dependencies": {
-		"@muze-nl/jsontag": "^0.9.6",
+		"@muze-nl/jsontag": "^0.9.8",
 		"@muze-nl/od-jsontag": "^0.2.7",
-		"@muze-nl/simplystore": "0.6.16",
+		"@muze-nl/simplystore": "0.6.17",
 		"curriculum-js": "^0.4.1",
 		"array-apply-partial-diff": "^0.1.0"
 	},
