@@ -6,6 +6,7 @@ import repl from 'repl';
 import JSONTag from '@muze-nl/jsontag'
 
 const curriculum = new Curriculum()
+let meta = {}
 let parsed = {}
 let storeSchema = {
     contexts: {},
@@ -30,7 +31,7 @@ function addNiveauIndex(entity) {
     if (!type) {
         return
     }
-    let children = curriculum.data.schema.types[type].children
+    let children = meta.schema.types[type].children
     let niveaus = []
     Object.keys(children).forEach(childType => {
         if (childType=='Vakleergebied') {
@@ -55,7 +56,7 @@ function addNiveauIndex(entity) {
 }
 
 const makeNiveauIndex = () => {
-    Object.entries(curriculum.data.schema.types).forEach(([typeName, typeData]) => {
+    Object.entries(meta.schema.types).forEach(([typeName, typeData]) => {
         if (!typeData.root) {
             return
         }
@@ -214,11 +215,13 @@ async function main() {
         }))
     })
     .then(() => {
-        curriculum.data.schema = storeSchema
+        meta.schema = storeSchema
         makeNiveauIndex(curriculum.data)
         // save as single jsontag blob
         let fileData = JSONTag.stringify(curriculum.data, null, 4)
-        fs.writeFileSync('../data/curriculum.jsontag', fileData);
+        fs.writeFileSync('../data/curriculum.jsontag', fileData)
+        let schemaData = JSONTag.stringify(storeSchema, null, 4)
+        fs.writeFileSync('../data/schema.jsontag', schemaData)
     })
 }
 
