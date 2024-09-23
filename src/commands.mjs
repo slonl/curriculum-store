@@ -185,11 +185,11 @@ export default {
             const walk = function(node, type, callback) {
                 Object.keys(node).forEach(property => {
                     if (property[0]>='A' && property[0]<='Z') {
-                        if (!dataspace.schema.types[type]?.children[property]) {
+                        if (!meta.schema.types[type]?.children[property]) {
                             throw new Error('Unknown child relation '+type+'.'+property,{cause:node})
                         }
                         if (!Array.isArray(node[property])) {
-                            if (dataspace.schema.types[type]?.properties[property]?.type!='object') {
+                            if (meta.schema.types[type]?.properties[property]?.type!='object') {
                                 throw new Error('Child relation '+type+'.'+property+' must be an array',{cause:node})
                             }
                             walk(node[property], property, callback)
@@ -209,7 +209,7 @@ export default {
                         if (p==='uuid') {
                             p = 'id'
                         }
-                        if (!dataspace.schema.types[t]?.properties[p]) {
+                        if (!meta.schema.types[t]?.properties[p]) {
                             throw new Error('Unknown property '+t+'.'+p, {cause:e})
                         }
                     }
