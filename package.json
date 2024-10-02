@@ -7,7 +7,7 @@
 	"dependencies": {
 		"@muze-nl/jsontag": "^0.9.8",
 		"@muze-nl/od-jsontag": "^0.2.9",
-		"@muze-nl/simplystore": "^0.6.19",
+		"@muze-nl/simplystore": "^0.6.21",
 		"curriculum-js": "^0.4.1",
 		"array-apply-partial-diff": "^0.1.0"
 	},
