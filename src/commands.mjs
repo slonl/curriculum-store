@@ -1,5 +1,6 @@
 import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
 import JSONTag from '@muze-nl/jsontag'
+import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
 import {source,isProxy} from '@muze-nl/od-jsontag/src/symbols.mjs'
 import applyValues from 'array-apply-partial-diff'
 
@@ -53,7 +54,7 @@ export default {
 
         function resolveLinks(arr) {
             arr.forEach((v,i,a) => {
-                if (JSONTag.getType(v)=='link') {
+                if (odJSONTag.getType(v)=='link') {
                     if (meta.index.id.has(''+v)) {
                         a[i] = meta.index.id.get(''+v).deref()
                     } else {
@@ -82,14 +83,14 @@ export default {
                 }
             }
             try {
-                JSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
+                odJSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
             } catch(e) {
                 throw new Error(e.message+' id '+JSON.stringify(child))
             }
             try {
-                JSONTag.setAttribute(child, 'class', type)
+                odJSONTag.setAttribute(child, 'class', type)
             } catch(e) {
-                throw new Error(e.message+' class '+JSON.stringify(type))
+                throw new Error(e.message+' class '+JSON.stringify(type)+' '+child.id)
             }
             if (root && !Array.isArray(root)) { // make sure root is always an array, if set
                 root = [root]
@@ -114,7 +115,7 @@ export default {
             dataspace[type].push(child)
             let proxy = dataspace[type][dataspace[type].length-1]
 
-            Object.entries(child).forEach(prop => {
+            Object.keys(child).forEach(prop => {
                 if (Array.isArray(child[prop])) {
                     child[prop] = child[prop].map(v => {
                         if (v.$mark=='inserted') {
@@ -122,6 +123,10 @@ export default {
                         }
                         return v
                     })
+                } else if (prop[0]>='A' && prop[0]<='Z') {
+                	if (child[prop].$mark == 'inserted') {
+                		child[prop] = addEntity(child[prop], child)
+                	}
                 }
             })
 
@@ -154,9 +159,9 @@ export default {
                 }
             }
             child.unreleased = true
-            let parentType = JSONTag.getAttribute(parent[source] ?? parent, 'class')
+            let parentType = odJSONTag.getAttribute(parent, 'class')
             if (!parentType) {
-                throw new Error('No parent type found',{ details: [parent, parent[source]] })
+                throw new Error('No parent type found for '+parent.id,{ details: [parent, parent[source]] })
             }
             Object.defineProperty(child, parentType, {
                 configurable: true,
@@ -219,8 +224,26 @@ export default {
                             continue;
                         }
                         resolveLinks(change.newValue)
-                        resolveLinks(change.prevValue)
-                        let tobeRemoved = missingEntries(change.prevValue, change.newValue)
+                        let tobeRemoved = []
+                        if (!change.prevValue) {
+                        	change.prevValue = []
+                        }
+                        if (!Array.isArray(change.prevValue)) {
+                        	errors.push({
+                        		code: 406,
+                        		message: `Property ${prop} expected to be an Array`,
+                        		details: {
+                        			id: change.id,
+                        			prop,
+                        			value: change.prevValue
+                        		}
+                        	})
+                        	continue;
+                        }
+                        if (Array.isArray(change.prevValue)) {
+	                        resolveLinks(change.prevValue)
+    	                    tobeRemoved = missingEntries(change.prevValue, change.newValue)
+    	                }
                         let newValue = change.newValue.map(v => {
                             if (v.$mark=='inserted') {
                                 v = addEntity(v, entity)
@@ -235,10 +258,10 @@ export default {
                             })
                         }
                         let completeArray = entity[prop]?.map(e => e.id) || []
-                        let prevValue = change.prevValue?.map(e => e.id) || []
-                        let changedValue = newValue.map(e => e.id)
-                        let appliedArray = applyValues(completeArray, prevValue, changedValue)
-                        entity[prop] = appliedArray.map(id => fromIndex(id))
+                        let prevValue     = change.prevValue?.map(e => e.id) || []
+                        let changedValue  = newValue.map(e => e.id)
+                        let appliedArray  = applyValues(completeArray, prevValue, changedValue)
+                        entity[prop]      = appliedArray.map(id => fromIndex(id))
                         if (!entity.unreleased) { // changes in arrays always result in marking released entities dirty
                             entity.dirty = true
                         }
@@ -250,7 +273,7 @@ export default {
                                 throw new Error('child has no root '+JSON.stringify(child))
                             }
                             let roots = child.root.slice()
-                            let childType = JSONTag.getAttribute(child[source] ?? child, 'class')
+                            let childType = odJSONTag.getAttribute(child, 'class')
                             if (!childType) {
                                 throw new Error('No child type found', {details: child})
                             }
@@ -265,7 +288,7 @@ export default {
                             }
 
                             // change {parent}, remove entity from tobeRemoved[entity[type]]
-                            let entityType = JSONTag.getAttribute(entity[source] ?? entity, 'class')
+                            let entityType = odJSONTag.getAttribute(entity, 'class')
                             child[entityType] = child[entityType].filter(e => e.id!=entity.id)
                             if (child[entityType].length==0) {
                                 delete child[entityType]
