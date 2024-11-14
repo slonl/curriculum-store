@@ -50,7 +50,11 @@ function addNiveauIndex(entity) {
     }
     niveaus = flatten(niveaus).filter(Boolean)
     if (niveaus.length) {
-        entity.NiveauIndex = niveaus
+        if (typeof entity.NiveauIndex === 'undefined') {
+            entity.NiveauIndex = [] //can't use non-enumerable here, since default JSONTag will ignore it
+        }
+        niveaus = niveaus.filter(n => entity.NiveauIndex.findIndex(ni => ni.id==n.id)===-1)
+        entity.NiveauIndex.splice(entity.NiveauIndex.length, 0, ...niveaus)
     }
     return niveaus
 }
