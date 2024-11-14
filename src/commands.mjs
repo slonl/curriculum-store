@@ -127,7 +127,7 @@ export default {
                             continue;
                         }
                         change.prevValue = resolveLinks(change.prevValue)
-                        tobeRemoved = missingEntries(change.prevValue, change.newValue)
+                        tobeRemoved = missingEntries(change.prevValue, change.newValue) || []
                         let newValue = change.newValue?.map(v => {
                             if (v.$mark=='inserted') {
                                 v = addChild(v, entity)
