@@ -1,8 +1,14 @@
-import * as JSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
+import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
+import JSONTag from '@muze-nl/jsontag'
 import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
 import applyValues from 'array-apply-partial-diff'
+import { appendFileSync } from 'fs'
 
 // TODO: frontend already checks for inconsistent properties - should this code do that as well?
+
+function log(message) {
+	appendFileSync(process.cwd()+'/data/import-log.txt', message+"\n")
+}
 
 /**
  * Imports an entity, with all its children. Merges changes in existing entities.
@@ -23,6 +29,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	} else if (importedEntity.id.substring(0,6)=='/uuid/') {
 		importedEntity.id = importedEntity.id.substring(6)
 	}
+	log('importing entity '+importedEntity.id)
 
 	/**
 	 * Tests if all entities match their schema's
@@ -55,7 +62,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
                         delete e.niveaus
                         return
 	                }
-	                if (!meta.schema.types[type]?.propertyerties[property]) {
+	                if (!meta.schema.types[type]?.properties[property]) {
 	                    throw new Error('Unknown property '+type+'.'+property, {cause:e})
 	                }
 	            } else if (isChildRelation(property)) {
@@ -63,7 +70,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	                    throw new Error('Unknown child relation '+type+'.'+property,{cause:e})
 	                }
 	                if (!Array.isArray(e[property])) {
-	                    if (meta.schema.types[type]?.propertyerties[property]?.type!='object') {
+	                    if (meta.schema.types[type]?.properties[property]?.type!='object') {
 	                        throw new Error('Child relation '+type+'.'+property+' must be an array',{cause:e})
 	                    }
 	                }
@@ -82,65 +89,70 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	{
 		let changeCount = 0
 
-	    // make sure importedRoot is a storedNode or will be soon
-	    if (importedRoot) {
-	    	let existingRoot = fromIndex(importedRoot.id)
-	    	if (existingRoot) {
-		    	importedRoot = existingRoot
-		    }
-	    }
-	    // handle root here, walk only walks over child entities
-	    let current = fromIndex(importedEntity.id)
-	    if (current) {
-	    	if (mergeImportedEntity(importedEntity, current)) {
-	    		changeCount++
-	    	}
-	    	if (importedRoot) {
-		    	registerRoot(current, importedRoot)
-		    }
-	    }
-
+	    /**
+	     * 
+	     */
 	    function MergeIfNeeded(importedEntity) {
 	    	let isChanged = false
             let id = importedEntity.id
 	        if (id) {
 	            let storedEntity = fromIndex(id)
 	            if (storedEntity) {
-	                if (mergeImportedEntity(importedEntity, storedEntity)) {	                	
+	                if (mergeImportedEntity(importedEntity, storedEntity)) {
+	                	log('change detected in '+storedEntity.id)
 	                	isChanged = true
 	                }
-	                if (registerRoot(storedEntity, importedRoot)) {
-	                	isChanged = true
-	                }
-	                if (isChanged) {
-	                	return storedEntity
-	                }
+	                // if (registerRoot(storedEntity, importedRoot)) {
+	                // 	log('root change detected in '+storedEntity.id)
+	                // 	isChanged = true
+	                // }
+                	return [isChanged, storedEntity]
 	            }
 	        }
+	        return [isChanged, importedEntity]
 	    }
 
 	    walkDepthFirst(importedEntity, (importedEntity) => {
+	    	log('walking to '+importedEntity.id)
 	        Object.keys(importedEntity).forEach(property => {
 	            if (isChildRelation(property)) {
 	                if (!Array.isArray(importedEntity[property])) {
-	                	let storedEntity = MergeIfNeeded(importedEntity[property])
-	                    if (storedEntity) {
+	                	let [changed, newEntity] = MergeIfNeeded(importedEntity[property])
+	                    if (changed) {
 	                    	changeCount++
-	                    	importedEntity[property] = storedEntity
+	                    }
+	                    if (newEntity!=importedEntity[property]) { 
+	                    	importedEntity[property] = newEntity
 	                    }
 	                } else {
 	                    importedEntity[property].forEach((importedChild,i) => {
-	                    	let storedEntity = MergeIfNeeded(importedChild)
-	                    	if (storedEntity) {
+	                    	let [changed, newEntity] = MergeIfNeeded(importedChild)
+	                    	if (changed) {
 	                    		changeCount++
-	                    		importedEntity[property][i] = storedEntity
+	                    	}
+	                    	if (newEntity!=importedChild) {
+	                    		importedEntity[property][i] = newEntity
 	                    	}
 	                    })
 	                }
 	            }
 	        })
 	    })
+
+	    // handle root here, walk only walks over child entities
+	    let current = fromIndex(importedEntity.id)
 	    if (current) {
+	    	log('merging '+importedEntity.id)
+	    	if (mergeImportedEntity(importedEntity, current)) {
+	    		log('change detected '+current.id)
+	    		changeCount++
+	    	} else {
+	    		log('no change')
+	    	}
+	    	// if (importedRoot) {
+	    	// 	log('register root '+importedRoot)
+		    // 	registerRoot(current, importedRoot)
+		    // }
 	    	// from here on, use the merged storedEntity instead of 
 	    	// the importedEntity
 		    importedEntity = current
@@ -155,11 +167,12 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	 * are not deleted.
 	 * Ignores any properties that are temporary, e.g. '@type' 
 	 * Sets the storedEntity.dirty flag to true, if any changes have been applied
+	 * Must be called depth first, so all child entities have been merged already
 	 */
 	function mergeImportedEntity(importedEntity, storedEntity)
 	{
 		let changed = false
-		// for all lowercase propertyerties in importedEntity
+		// for all lowercase properties in importedEntity
 		for (let property of Object.keys(importedEntity)) {
 			if (isLiteralProperty(property)) {
 				// set these in storedEntity
@@ -177,8 +190,21 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 						// TODO: make sure the type of value is correct according to the schema
 						// only update storedEntity if there is an actual change
 						if (storedEntity[property]!==importedEntity[property]) {
-							storedEntity[property] = importedEntity[property]
-							changed = true
+							if (typeof importedEntity[property] == 'string') {
+								// only mark dirty if the change is other than whitespace
+								let stored = storedEntity[property].replace(/\s+/g, '')
+								let imported = importedEntity[property].replace(/\s+/g, '')
+								log(property+' stored '+stored+'; new '+imported)
+								storedEntity[property] = importedEntity[property]
+								if (stored !== imported) {
+									changed = true
+									log('updated '+property+' on '+storedEntity.id)
+								}
+							} else {
+								storedEntity[property] = importedEntity[property]
+								changed = true
+								log('updated '+property+' on '+storedEntity.id)
+							}
 						}
 					break
 				}
@@ -187,16 +213,25 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 				if (newValue) {
 					storedEntity[property] = newValue
 					changed = true
+					log('updated child property '+property+' on '+storedEntity.id)
 				}
 			}
 		}
 		if (changed) {
 			storedEntity.dirty = true
+			log('dirty set on '+storedEntity.id)
 		}
 		return changed
 	}
 
-	function mergeChildRelations(newValue, entity, property) {
+	let removedChildren = new Set()
+	/**
+	 * merges existing entity property with newValue, if needed
+	 * newValue must contain entities that have already been stored
+	 * only returns an array if entity[property] must be updated
+	 */
+	function mergeChildRelations(newValue, entity, property)
+	{
 		const currentValue = entity[property]
 	    if (Array.isArray(newValue) || Array.isArray(currentValue)) {
 		    if (!currentValue || !Array.isArray(currentValue)) {
@@ -206,20 +241,40 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		    if (!newValue || !Array.isArray(newValue)) {
 		    	throw new Error('Expected property '+property+' to be an array', {cause: newValue})
 		    }
+		    let changed = false
 		    let tobeRemoved = missingEntries(currentValue, newValue)
-		    let currentSet  = currentValue.map(e => e.id) || []
-		    let newSet      = newValue.map(e => e.id)
-		    let appliedSet  = applyValues(currentSet, currentSet, newSet)
-		    newValue        = appliedSet.map(id => fromIndex(id))
-
-		    // change root. find remaining roots of any tobeRemoved entities
-		    // for each root, walk until you find tobeRemoved item, if not, remove root
-		    for (let child of tobeRemoved) {
-		    	updateRoot(child)
-		    	removeParent(child, entity)
-		    }
-		    return newValue
-		} else if (currentValue!=newValue) {
+		    if (tobeRemoved.length) {
+		    	changed = true
+		    } else {
+			    let tobeAdded   = addedEntries(currentValue, newValue)
+			    if (tobeAdded.length) {
+			    	changed = true
+			    } else {
+				    let reordered   = orderChanges(currentValue, newValue)
+				    if (reordered.length) {
+				    	changed = true
+				    }
+				}
+			}
+			if (changed) {
+			    let currentSet  = currentValue.map(e => e.id) || []
+			    let newSet      = newValue.map(e => e.id)
+			    let appliedSet  = applyValues(currentSet, currentSet, newSet)
+			    newValue        = appliedSet.map(id => fromIndex(id))
+			    log('merge child array: was: '
+			    		+currentValue.map(e => e.id).join(',')
+			    		+' remove '+(tobeRemoved.map(e => e.id).join(',')
+			    		+'; now '+newValue.map(e => e.id).join(',')))
+			    // change root. find remaining roots of any tobeRemoved entities
+			    // for each root, walk until you find tobeRemoved item, if not, remove root
+			    for (let child of tobeRemoved) {
+			    	removedChildren.add(child.id)
+			    	removeParent(child, entity)
+			    }
+			    return newValue
+			}
+		} else if (currentValue?.id!=newValue?.id) {
+			log('merge child relations non array '+currentValue.id+':'+newValue.id)
 			return newValue
 		}
 	}
@@ -240,7 +295,6 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 						entity[property].forEach((child, index, arr) => {
 							if (!hasIndex(child.id)) {
 								arr[index] = addEntity(child, dataspace, meta)
-							    registerRoot(arr[index], importedRoot)
 								newCount++
 							}
 						})
@@ -248,7 +302,6 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 						const child = entity[property]
 						if (!hasIndex(child.id)) {
 							entity[property] = addEntity(child, dataspace, meta)
-							registerRoot(entity[property], importedRoot)
 							newCount++
 						}
 					}
@@ -261,36 +314,50 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function linkParentProperties()
 	{
 		const linkParent = (child, parent) => {
-			const parentType = JSONTag.getAttribute(parent, 'class');
+			let updated = false
+			const parentType = odJSONTag.getAttribute(parent, 'class');
 			if (typeof child[parentType] === 'undefined') {
 				Object.defineProperty(child, parentType, {
 					value: [],
-					enumerable: false
+					enumerable: false,
+					writable: true,
+					configurable: true
 				})
+				updated = true
+				log('added parent property '+parentType+' to child '+child.id)
 			}
 			if (child[parentType].indexOf(parent)===-1) {
 				child[parentType].push(parent)
+				updated = true
+				log('added parent '+parent.id+' to child '+child.id)
 			}
+			return updated
 		}
 
+		let updated = 0
 		walkDepthFirst(importedEntity, entity => {
 			Object.keys(entity).forEach(property => {
 				if (isChildRelation(property)) {
 					if (Array.isArray(entity[property])) {
 						entity[property].forEach(child => {
-							linkParent(child, entity)
+							if (linkParent(child, entity)) {
+								updated++
+							}
 						})
 					} else {
-						linkParent(entity[property], entity)
+						if (linkParent(entity[property], entity)) {
+							updated++
+						}
 					}
 				}
 			})
 		})
+		return updated
 	}
 
 	function updateNiveauIndex(entity)
 	{
-		const type = JSONTag.getAttribute(entity, 'class')
+		const type = odJSONTag.getAttribute(entity, 'class')
 		const children = meta.schema.types[type].children
 		let niveaus = []
 		Object.keys(children).forEach(childType => {
@@ -306,8 +373,20 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 			niveaus.push(entity.Niveau)
 		}
 		niveaus = flatten(niveaus).filter(Boolean)
-		entity.NiveauIndex = niveaus
-		return niveaus
+		if (niveaus.length && typeof entity.NiveauIndex === 'undefined') {
+			Object.defineProperty(entity, 'NiveauIndex', {
+				value: [],
+				enumerable: false,
+				writable: true,
+				configurable: true
+			})
+		}
+		if (niveaus.length || entity.NiveauIndex) {
+			niveaus = niveaus.filter(n => entity.NiveauIndex.findIndex(ni => ni.id==n.id)===-1)
+			entity.NiveauIndex.splice(entity.NiveauIndex.length, 0, ...niveaus)
+			return entity.NiveauIndex
+		}
+		return []
 	}
 
 	/**
@@ -333,15 +412,40 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	let updatedCount = linkImportedEntities()
 
 	// adds new entities to the indexes and their type array (e.g. data.Vakleergebied)
-	let newCount = appendNewEntities()
+	// let newCount = appendNewEntities()
+	let newCount = 0 //temp
 
 	// make sure the reverse/parent properties have the new parents
-	linkParentProperties()
+	log('updated before linkParentProperties '+updatedCount)
+	updatedCount += linkParentProperties()
+	log('updated after linkParentProperties '+updatedCount)
 
 	// new children with niveaus may have been imported, or existing children removed
 	updateNiveauIndex(importedEntity)
 
+	// add importedRoot entries to all children, if set
+    if (Array.isArray(importedRoot) && importedRoot.length) {
+    	importedRoot.forEach((r,i) => {
+    	   	let existingRoot = fromIndex(r.id)
+	    	if (existingRoot) {
+		    	importedRoot[i] = existingRoot
+	    	} else {
+	    		importedRoot[i] = null
+	    	}
+	    })
+		updatedCount += updateRoots(importedEntity, importedRoot)
+    }
+    // remove roots that no longer link (indirectly) to removed children from them
+    for (childId of removedChildren) {
+    	if (updateRoot(fromIndex(child.id))) {
+    		updatedCount++
+    	}
+    }
+
+	log('done importing '+importedEntity.id+' ['+updatedCount+','+newCount+']')
 	return [updatedCount,newCount]
+
+	log('done')
 }
 
 
@@ -364,19 +468,30 @@ export function registerRoot(entity, roots) {
     }
    	roots.forEach(root => {
    		if (entity.root.indexOf(root)===-1) {
+   			log('adding root entity '+root.id+' to entity '+entity.id)
    			entity.root.push(root)
    			return true
     	}
     })
 }
 
+function updateRoots(node, roots) {
+	let updated = 0
+	walkTopDown(node, node => {
+		if (registerRoot(node, roots)) {
+			updated++
+		}
+	})
+	return updated
+}
+
 function walkDepthFirst(node, callback) {
     Object.keys(node).forEach(property => {
         if (isChildRelation(property)) {
             if (!Array.isArray(node[property])) {
-                walk(node[property], callback)
+                walkDepthFirst(node[property], callback)
             } else {
-                node[property].forEach(n => walk(n, callback))
+                node[property].forEach(n => walkDepthFirst(n, callback))
             }
         }
     })
@@ -388,20 +503,20 @@ function walkTopDown(node, callback) {
     Object.keys(node).forEach(property => {
         if (isChildRelation(property)) {
             if (!Array.isArray(node[property])) {
-                walk(node[property], callback)
+                walkTopDown(node[property], callback)
             } else {
-                node[property].forEach(n => walk(n, callback))
+                node[property].forEach(n => walkTopDown(n, callback))
             }
         }
     })
 }
 
 export function isChildRelation(property) {
-	return /[A..Z]/.test(property[0])
+	return /[A-Z]/.test(property[0])
 }
 
 export function isLiteralProperty(property) {
-	return /[a..z_]/.test(property[0])
+	return /[a-z_]/.test(property[0])
 }
 
 export function isTemporaryProperty(property) {
@@ -421,32 +536,41 @@ export function flatten(arr) {
 }
 
 export function missingEntries(a, b) {
-    return a.filter(x => !b.includes(x))
+    return a.map(e => e.id).filter(x => !b.map(e => e.id).includes(x))
 }
 
 export function addedEntries(a, b) {
-    return b.filter(x => !a.includes(x))
+    return b.map(e => e.id).filter(x => !a.map(e => e.id).includes(x))
+}
+
+export function orderChanges(a, b) {
+	return a.map(e => e.id).join(',') != b.map(e => e.id).join(',')
 }
 
 export function updateRoot(child)
 {
     if (!child.root) {
-        throw new Error('child has no root '+JSON.stringify(child))
+//        throw new Error('child has no root '+JSON.stringify(child))
+        return false
     }
+    let updated = false
     let roots = child.root.slice()
-    let childType = JSONTag.getAttribute(child, 'class')
+    let childType = odJSONTag.getAttribute(child, 'class')
     if (!childType) {
         throw new Error('No child type found', {details: child})
     }
     for (let root of child.root) {
         if (!findChild(root, child, childType)) {
             roots.splice(roots.indexOf(root),1)
+            updated++
         }
     }
     child.root = roots
-    if (child.root.length==0) {
+    if (child.root.length==0 && !child.deleted) {
         child.deleted = true // mark for deprecation
+        updated++
     }
+    return updated
 }
 
 export function findChild(root, child, type) {
@@ -475,10 +599,10 @@ export function findChild(root, child, type) {
 }
 
 export function removeParent(child, parent) {
-	const parentType = JSONTag.getAttribute(entity, 'class')
+	const parentType = odJSONTag.getAttribute(parent, 'class')
     child[parentType] = child[parentType].filter(e => e.id!=parent.id)
     if (child[parentType].length==0) {
-        delete child[entityType]
+        delete child[parentType]
     }
 }
 
@@ -514,15 +638,16 @@ export function addEntity(entity, dataspace, meta)
         }
     }
     entity.unreleased = true
+    log('adding entity '+JSON.stringify(entity))
     dataspace[type].push(entity)
     entity = dataspace[type][dataspace[type].length-1]
     try {
-        JSONTag.setAttribute(entity, 'class', type)
+        odJSONTag.setAttribute(entity, 'class', type)
     } catch(e) {
         throw new Error(e.message+' class '+JSON.stringify(type)+' '+entity.id)
     }
     try {
-        JSONTag.setAttribute(entity, 'id', '/uuid/'+entity.id)
+        odJSONTag.setAttribute(entity, 'id', '/uuid/'+entity.id)
     } catch(e) {
         throw new Error(e.message+' id '+JSON.stringify(entity))
     }

@@ -1,29 +1,8 @@
 import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
-import JSONTag from '@muze-nl/jsontag'
 import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
-import {source,isProxy} from '@muze-nl/od-jsontag/src/symbols.mjs'
+import JSONTag from '@muze-nl/jsontag'
 import applyValues from 'array-apply-partial-diff'
-
-function findChild(root, child, type) {
-    // walk over children of root untill you find child
-    // naive implementation
-    if (root[type]?.includes(child)) {
-        return true
-    }
-    for (let prop of Object.keys(root)) {
-        if (/^[A-Z]/.test(prop)) {
-            for (let node of root[prop]) {
-                if (!node) {
-                    continue //Tag contains null
-                }
-                if (findChild(node, child, type)) {
-                    return true
-                }
-            }
-        }
-    }
-    return false
-}
+import {importEntity, addEntity, findChild, registerRoot, updateRoot, removeParent, missingEntries, addedEntries} from './import.merge.mjs'
 
 export default {
     patch: (dataspace, command, request, meta) => {
@@ -44,14 +23,6 @@ export default {
         let errors = []
         let localIds = new Map()
 
-        function missingEntries(a, b) {
-            return a.filter(x => !b.includes(x))
-        }
-
-        function addedEntries(a, b) {
-            return b.filter(x => !a.includes(x))
-        }
-
         function resolveLinks(arr) {
             arr.forEach((v,i,a) => {
                 if (odJSONTag.getType(v)=='link') {
@@ -62,114 +33,30 @@ export default {
                     }
                 }
             })
-            console.log('resolved',arr)
         }
 
-        function appendEntity(child, type, root=null) {
-            if (!child.id) {
-                if (!child.uuid) {
-                    throw new Error('new entity missing id and uuid')
-                }
-                child.id = child.uuid
-                delete child.uuid
-            } else {
-                if (child.id.substring(0,6)=='/uuid/') {
-                    child.id = child.id.substring(6)
-                }
+        function addChild(child, parent) {
+            child = addEntity(child, dataspace, meta)
+            registerRoot(child, parent.root)
+            const childType = odJSONTag.getAttribute(child, 'class')
+            if (!childType) {
+                throw new Error('No entity type found: '+child.id, { cause: child })
             }
-            for (let key in child) {
-                if (key[0]=='@' || key[0]=='$') {
-                    delete child[key]
-                }
+            const parentType = odJSONTag.getAttribute(parent, 'class')
+            if (!parentType) {
+                throw new Error('No parent type found: '+parent.id, { cause: parent })
             }
-            try {
-                odJSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
-            } catch(e) {
-                throw new Error(e.message+' id '+JSON.stringify(child))
-            }
-            try {
-                odJSONTag.setAttribute(child, 'class', type)
-            } catch(e) {
-                throw new Error(e.message+' class '+JSON.stringify(type)+' '+child.id)
-            }
-            if (root && !Array.isArray(root)) { // make sure root is always an array, if set
-                root = [root]
-            }
-            if (!child.root || !Array.isArray(child.root)) {
-                // fix incorrect or missing child.root: must always exist and be a non-enumerable array
-                // in particular orphans may not have a .root property, so add it here
-                Object.defineProperty(child, 'root', {
+            if (typeof child[parentType]=='undefined') {
+                Object.defineProperty(child, parentType, {
                     configurable: true,
                     writable: true,
                     enumerable: false,
-                    value: child.root ? [child.root] : []
+                    value: []
                 })
             }
-            if (root) {
-                // merge root and child.root, only add missing entries
-                let current = child.root.map(e => e.id)
-                root.filter(e => !current.includes(e.id)).forEach(e => {
-                    child.root.push(e)
-                })
-            }
-            dataspace[type].push(child)
-            let proxy = dataspace[type][dataspace[type].length-1]
-
-            Object.keys(child).forEach(prop => {
-                if (Array.isArray(child[prop])) {
-                    child[prop] = child[prop].map(v => {
-                        if (v.$mark=='inserted') {
-                            v = addEntity(v, child)
-                        }
-                        return v
-                    })
-                } else if (prop[0]>='A' && prop[0]<='Z') {
-                	if (child[prop].$mark == 'inserted') {
-                		child[prop] = addEntity(child[prop], child)
-                	}
-                }
-            })
-
-            child = proxy
-            meta.index.id.set('/uuid/'+child.id, child)
-
+            child[parentType].push(parent)
+            //FIXME: check if children of this child are also added
             return child
-        }
-
-        function addEntity(child, parent) {
-            if (!child.id) {
-                if (!child.uuid) {
-                    throw new Error('new entity missing id and uuid')
-                }
-                child.id = child.uuid
-                delete child.uuid
-            } else {
-                if (child.id.substring(0,6)=='/uuid/') {
-                    child.id = child.id.substring(6)
-                }
-            }
-            if (hasIndex(child.id)) {
-                return fromIndex(child.id)
-            }
-            let type = child['@type']
-            let root = parent.root
-            for (let key in child) {
-                if (key[0]=='@' || key[0]=='$') {
-                    delete child[key]
-                }
-            }
-            child.unreleased = true
-            let parentType = odJSONTag.getAttribute(parent, 'class')
-            if (!parentType) {
-                throw new Error('No parent type found for '+parent.id,{ details: [parent, parent[source]] })
-            }
-            Object.defineProperty(child, parentType, {
-                configurable: true,
-                writable: true,
-                enumerable: false,
-                value: [parent]
-            })
-            return appendEntity(child, type, root)
         }
 
         let prop, entity, currentValue
@@ -177,7 +64,7 @@ export default {
         for (let change of command.value) {
             updatedEntities++
             switch(change.name) {
-                case 'newEntity':
+                case 'importEntity':
                     /*  change = {
                             name: 'addEntity',
                             entityType: 'Examenprogramma',
@@ -187,8 +74,7 @@ export default {
                             }
                         }
                     */
-                    appendEntity(change.entity, change['@type'], [change.entity])
-
+                    updatedEntities += importEntity(change.entity, [change.entity], dataspace, meta)
                 break
                 case 'updateEntity':
                 default:
@@ -223,7 +109,7 @@ export default {
                             })
                             continue;
                         }
-                        resolveLinks(change.newValue)
+                        change.newValue = resolveLinks(change.newValue)
                         let tobeRemoved = []
                         if (!change.prevValue) {
                         	change.prevValue = []
@@ -240,13 +126,11 @@ export default {
                         	})
                         	continue;
                         }
-                        if (Array.isArray(change.prevValue)) {
-	                        resolveLinks(change.prevValue)
-    	                    tobeRemoved = missingEntries(change.prevValue, change.newValue)
-    	                }
+                        change.prevValue = resolveLinks(change.prevValue)
+	                    tobeRemoved = missingEntries(change.prevValue, change.newValue)
                         let newValue = change.newValue.map(v => {
                             if (v.$mark=='inserted') {
-                                v = addEntity(v, entity)
+                                v = addChild(v, entity)
                             }
                             return v
                         })
@@ -269,30 +153,8 @@ export default {
                         // change root. find remaining roots of any tobeRemoved entities
                         // for each root, walk until you find tobeRemoved item, if not, remove root
                         for (let child of tobeRemoved) {
-                            if (!child.root) {
-                                throw new Error('child has no root '+JSON.stringify(child))
-                            }
-                            let roots = child.root.slice()
-                            let childType = odJSONTag.getAttribute(child, 'class')
-                            if (!childType) {
-                                throw new Error('No child type found', {details: child})
-                            }
-                            for (let root of child.root) {
-                                if (!findChild(root, child, childType)) {
-                                    roots.splice(roots.indexOf(root),1)
-                                }
-                            }
-                            child.root = roots
-                            if (child.root.length==0) {
-                                child.deleted = true // mark for deprecation
-                            }
-
-                            // change {parent}, remove entity from tobeRemoved[entity[type]]
-                            let entityType = odJSONTag.getAttribute(entity, 'class')
-                            child[entityType] = child[entityType].filter(e => e.id!=entity.id)
-                            if (child[entityType].length==0) {
-                                delete child[entityType]
-                            }
+                            updateRoot(child)
+                            removeParent(child, entity)
                         }
                     } else {
 /*
