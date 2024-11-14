@@ -128,7 +128,7 @@ export default {
                         }
                         change.prevValue = resolveLinks(change.prevValue)
                         tobeRemoved = missingEntries(change.prevValue, change.newValue)
-                        let newValue = change.newValue.map(v => {
+                        let newValue = change.newValue?.map(v => {
                             if (v.$mark=='inserted') {
                                 v = addChild(v, entity)
                             }
@@ -143,7 +143,7 @@ export default {
                         }
                         let completeArray = entity[prop]?.map(e => e.id) || []
                         let prevValue     = change.prevValue?.map(e => e.id) || []
-                        let changedValue  = newValue.map(e => e.id)
+                        let changedValue  = newValue?.map(e => e.id)
                         let appliedArray  = applyValues(completeArray, prevValue, changedValue)
                         entity[prop]      = appliedArray.map(id => fromIndex(id))
                         if (!entity.unreleased) { // changes in arrays always result in marking released entities dirty
