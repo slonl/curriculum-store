@@ -536,15 +536,15 @@ export function flatten(arr) {
 }
 
 export function missingEntries(a, b) {
-    return a.map(e => e.id).filter(x => !b.map(e => e.id).includes(x))
+    return a?.map(e => e.id).filter(x => !b?.map(e => e.id).includes(x))
 }
 
 export function addedEntries(a, b) {
-    return b.map(e => e.id).filter(x => !a.map(e => e.id).includes(x))
+    return b?.map(e => e.id).filter(x => !a?.map(e => e.id).includes(x))
 }
 
 export function orderChanges(a, b) {
-	return a.map(e => e.id).join(',') != b.map(e => e.id).join(',')
+	return a?.map(e => e.id).join(',') != b?.map(e => e.id).join(',')
 }
 
 export function updateRoot(child)
