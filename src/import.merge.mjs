@@ -38,13 +38,16 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function testImportedEntities()
 	{
 	    walkTopDown(importedEntity, e => {
-	    	if (!e['@type']) {
+	    	let type = odJSONTag.getAttribute(e, 'class')
+	    	if (!type) {
+		    	type = e['@type']
+		    }
+	    	if (!type) {
 	    		throw new Error('No @type given', {cause: e})
 	    	}
-	    	if (!meta.schema.types[e['@type']]) {
-	    		throw new Error('Unknown type '+e['@type'], {cause: e})
+	    	if (!meta.schema.types[type]) {
+	    		throw new Error('Unknown type '+type, {cause: e})
 	    	}
-	    	const type = e['@type']
 	        Object.keys(e).forEach(property => {
 	            if (isTemporaryProperty(property)) {
 	                // ignore these, will be removed by appendEntity
@@ -244,6 +247,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		    let changed = false
 		    let tobeRemoved = missingEntries(currentValue, newValue)
 		    if (tobeRemoved.length) {
+		    	log('tobeRemoved '+JSONTag.stringify(tobeRemoved))
 		    	changed = true
 		    } else {
 			    let tobeAdded   = addedEntries(currentValue, newValue)
@@ -263,13 +267,13 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 			    newValue        = appliedSet.map(id => fromIndex(id))
 			    log('merge child array: was: '
 			    		+currentValue.map(e => e.id).join(',')
-			    		+' remove '+(tobeRemoved.map(e => e.id).join(',')
+			    		+' remove '+(tobeRemoved.join(',')
 			    		+'; now '+newValue.map(e => e.id).join(',')))
 			    // change root. find remaining roots of any tobeRemoved entities
 			    // for each root, walk until you find tobeRemoved item, if not, remove root
-			    for (let child of tobeRemoved) {
-			    	removedChildren.add(child.id)
-			    	removeParent(child, entity)
+			    for (let childId of tobeRemoved) {
+			    	removedChildren.add(childId)
+			    	removeParent(fromIndex(childId), entity)
 			    }
 			    return newValue
 			}
@@ -288,6 +292,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function appendNewEntities()
 	{
 		let newCount = 0
+		log('appendNewEntities '+importedEntity.id)
 		walkDepthFirst(importedEntity, entity => {
 			Object.keys(entity).forEach(property => {
 				if (isChildRelation(property)) {
@@ -314,8 +319,14 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function linkParentProperties()
 	{
 		const linkParent = (child, parent) => {
+			log('linkParent '+child.id+' '+parent.id)
 			let updated = false
+			child = fromIndex(child.id)
+			parent = fromIndex(parent.id)
 			const parentType = odJSONTag.getAttribute(parent, 'class');
+			if (!parentType) {
+				throw new Error('parent '+parent.id+' has no class attribute')
+			}
 			if (typeof child[parentType] === 'undefined') {
 				Object.defineProperty(child, parentType, {
 					value: [],
@@ -339,12 +350,15 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 			Object.keys(entity).forEach(property => {
 				if (isChildRelation(property)) {
 					if (Array.isArray(entity[property])) {
+						log('linkParentCall '+entity.id+' '+property)
+						log(JSON.stringify(entity[property].map(e => e.id)))
 						entity[property].forEach(child => {
 							if (linkParent(child, entity)) {
 								updated++
 							}
 						})
 					} else {
+						log('linkParentCall single '+entity.id+' '+entity[property]?.id)
 						if (linkParent(entity[property], entity)) {
 							updated++
 						}
@@ -358,6 +372,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function updateNiveauIndex(entity)
 	{
 		const type = odJSONTag.getAttribute(entity, 'class')
+		if (!meta.schema.types[type]) {
+			throw new Error('Unknown type '+type)
+		}
 		const children = meta.schema.types[type].children
 		let niveaus = []
 		Object.keys(children).forEach(childType => {
@@ -412,9 +429,8 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	let updatedCount = linkImportedEntities()
 
 	// adds new entities to the indexes and their type array (e.g. data.Vakleergebied)
-	// let newCount = appendNewEntities()
-	let newCount = 0 //temp
-
+	let newCount = appendNewEntities()
+	
 	// make sure the reverse/parent properties have the new parents
 	log('updated before linkParentProperties '+updatedCount)
 	updatedCount += linkParentProperties()
@@ -436,8 +452,8 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		updatedCount += updateRoots(importedEntity, importedRoot)
     }
     // remove roots that no longer link (indirectly) to removed children from them
-    for (childId of removedChildren) {
-    	if (updateRoot(fromIndex(child.id))) {
+    for (let childId of removedChildren) {
+    	if (updateRoot(fromIndex(childId))) {
     		updatedCount++
     	}
     }
@@ -600,6 +616,7 @@ export function findChild(root, child, type) {
 
 export function removeParent(child, parent) {
 	const parentType = odJSONTag.getAttribute(parent, 'class')
+	log('removing parent '+parentType+' '+parent.id+' from '+child.id)
     child[parentType] = child[parentType].filter(e => e.id!=parent.id)
     if (child[parentType].length==0) {
         delete child[parentType]
@@ -643,6 +660,7 @@ export function addEntity(entity, dataspace, meta)
     entity = dataspace[type][dataspace[type].length-1]
     try {
         odJSONTag.setAttribute(entity, 'class', type)
+        log('set class '+type+' on '+entity.id)
     } catch(e) {
         throw new Error(e.message+' class '+JSON.stringify(type)+' '+entity.id)
     }
@@ -652,5 +670,6 @@ export function addEntity(entity, dataspace, meta)
         throw new Error(e.message+' id '+JSON.stringify(entity))
     }
     meta.index.id.set('/uuid/'+entity.id, entity)
-    return entity
+    log('added /uuid/'+entity.id)
+    return meta.index.id.get('/uuid/'+entity.id)
 }
