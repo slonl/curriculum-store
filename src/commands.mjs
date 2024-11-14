@@ -112,6 +112,7 @@ export default {
                         change.newValue = resolveLinks(change.newValue)
                         let tobeRemoved = []
                         if (!change.prevValue) {
+<<<<<<< Updated upstream
                         	change.prevValue = []
                         }
                         if (!Array.isArray(change.prevValue)) {
@@ -128,6 +129,24 @@ export default {
                         }
                         change.prevValue = resolveLinks(change.prevValue)
 	                    tobeRemoved = missingEntries(change.prevValue, change.newValue)
+=======
+                            change.prevValue = []
+                        }
+                        if (!Array.isArray(change.prevValue)) {
+                            errors.push({
+                                code: 406,
+                                message: `Property ${prop} expected to be an Array`,
+                                details: {
+                                    id: change.id,
+                                    prop,
+                                    value: change.prevValue
+                                }
+                            })
+                            continue;
+                        }
+                        change.prevValue = resolveLinks(change.prevValue)
+                        tobeRemoved = missingEntries(change.prevValue, change.newValue)
+>>>>>>> Stashed changes
                         let newValue = change.newValue.map(v => {
                             if (v.$mark=='inserted') {
                                 v = addChild(v, entity)
