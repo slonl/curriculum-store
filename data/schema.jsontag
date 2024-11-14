@@ -112,7 +112,10 @@
                             "replacedBy":<link>"/schema/properties/replacedBy/",
                             "replaces":<link>"/schema/properties/replaces/",
                             "unreleased":<link>"/schema/properties/unreleased/",
-                            "prefix":<link>"/schema/properties/prefix/"
+                            "prefix":<link>"/schema/properties/prefix/",
+                            "type":<object id="/schema/properties/type/">{
+                                "type":"string"
+                            }
                         },
                         "children":{
                             
@@ -151,7 +154,6 @@
                                 "minimum":0,
                                 "maximum":1
                             },
-                            "ce_se":<link>"/schema/properties/ce_se/",
                             "kern":<object id="/schema/properties/kern/">{
                                 "type":"integer",
                                 "minimum":0,
@@ -175,8 +177,9 @@
                     "ExamenprogrammaSubdomein":<object id="/schema/types/ExamenprogrammaSubdomein/">{
                         "label":"examenprogramma_subdomein",
                         "properties":{
-                            "ce_se":<link>"/schema/properties/ce_se/",
                             "prefix":<link>"/schema/properties/prefix/",
+                            "ce":<link>"/schema/properties/ce/",
+                            "se":<link>"/schema/properties/se/",
                             "title":<link>"/schema/properties/title/",
                             "description":<link>"/schema/properties/description/",
                             "id":<link>"/schema/properties/id/",
@@ -191,8 +194,9 @@
                     "ExamenprogrammaDomein":<object id="/schema/types/ExamenprogrammaDomein/">{
                         "label":"examenprogramma_domein",
                         "properties":{
-                            "ce_se":<link>"/schema/properties/ce_se/",
                             "prefix":<link>"/schema/properties/prefix/",
+                            "ce":<link>"/schema/properties/ce/",
+                            "se":<link>"/schema/properties/se/",
                             "title":<link>"/schema/properties/title/",
                             "description":<link>"/schema/properties/description/",
                             "id":<link>"/schema/properties/id/",
@@ -410,80 +414,51 @@
             "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
             "ErkLesidee":<link>"/schema/types/ErkLesidee/"
         },
-        "Doelgroepteksten":<object id="/schema/contexts/Doelgroepteksten/">{
-            "label":"doelgroepteksten",
-            "Leerlingtekst":<object id="/schema/types/Leerlingtekst/">{
-                "label":"leerlingtekst",
+        "Examenprogramma":<object id="/schema/contexts/Examenprogramma/">{
+            "label":"examenprogramma",
+            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
+            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+            "ExamenprogrammaVakleergebied":<object id="/schema/types/ExamenprogrammaVakleergebied/">{
+                "label":"examenprogramma_vakleergebied",
                 "properties":{
-                    "description":<link>"/schema/properties/description/",
                     "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
                     "id":<link>"/schema/properties/id/",
                     "replacedBy":<link>"/schema/properties/replacedBy/",
                     "replaces":<link>"/schema/properties/replaces/",
                     "unreleased":<link>"/schema/properties/unreleased/"
                 },
                 "children":{
-                    "Doel":<link>"/schema/types/Doel/",
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
+                }
+            },
+            "Examenprogramma":<object id="/schema/types/Examenprogramma/">{
+                "label":"examenprogramma",
+                "properties":{
+                    "ingangsdatum":<object id="/schema/properties/ingangsdatum/">{
+                        "type":"string"
+                    },
+                    "url":<object id="/schema/properties/url/">{
+                        "type":"string"
+                    },
+                    "versie":<object id="/schema/properties/versie/">{
+                        "type":"string"
+                    },
+                    "prefix":<link>"/schema/properties/prefix/",
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
                     "Niveau":<link>"/schema/types/Niveau/",
-                    "Doelniveau":<link>"/schema/types/Doelniveau/",
-                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
-                    "Deprecated":{
-                        "label":"deprecated",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "Alias":{
-                        "label":"alias",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "Vak":{
-                        "label":"vak",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "LpibVakkern":{
-                        "label":"lpib_vakkern",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "LpibVaksubkern":{
-                        "label":"lpib_vaksubkern",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "LpibVakinhoud":{
-                        "label":"lpib_vakinhoud",
-                        "properties":{
-                            
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "Kerndoel":<link>"/schema/types/Kerndoel/",
-                    "KerndoelDomein":<object id="/schema/types/KerndoelDomein/">{
-                        "label":"kerndoel_domein",
+                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+                    "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
+                    "ExamenprogrammaKop1":<object id="/schema/types/ExamenprogrammaKop1/">{
+                        "label":"examenprogramma_kop1",
                         "properties":{
                             "title":<link>"/schema/properties/title/",
                             "description":<link>"/schema/properties/description/",
@@ -493,66 +468,8 @@
                             "unreleased":<link>"/schema/properties/unreleased/"
                         },
                         "children":{
-                            "Kerndoel":<link>"/schema/types/Kerndoel/"
-                        }
-                    },
-                    "KerndoelUitstroomprofiel":<object id="/schema/types/KerndoelUitstroomprofiel/">{
-                        "label":"kerndoel_uitstroomprofiel",
-                        "properties":{
-                            "title":<link>"/schema/properties/title/",
-                            "description":<link>"/schema/properties/description/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            
-                        }
-                    },
-                    "KerndoelVakleergebied":<object id="/schema/types/KerndoelVakleergebied/">{
-                        "label":"kerndoel_vakleergebied",
-                        "properties":{
-                            "title":<link>"/schema/properties/title/",
-                            "description":<link>"/schema/properties/description/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            "Kerndoel":<link>"/schema/types/Kerndoel/",
-                            "Niveau":<link>"/schema/types/Niveau/",
-                            "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
-                            "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/"
-                        },
-                        "root":true
-                    },
-                    "Examenprogramma":<object id="/schema/types/Examenprogramma/">{
-                        "label":"examenprogramma",
-                        "properties":{
-                            "ingangsdatum":<object id="/schema/properties/ingangsdatum/">{
-                                "type":"string"
-                            },
-                            "url":<object id="/schema/properties/url/">{
-                                "type":"string"
-                            },
-                            "versie":<object id="/schema/properties/versie/">{
-                                "type":"string"
-                            },
-                            "prefix":<link>"/schema/properties/prefix/",
-                            "title":<link>"/schema/properties/title/",
-                            "description":<link>"/schema/properties/description/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            "Niveau":<link>"/schema/types/Niveau/",
-                            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-                            "ExamenprogrammaVakleergebied":<object id="/schema/types/ExamenprogrammaVakleergebied/">{
-                                "label":"examenprogramma_vakleergebied",
+                            "ExamenprogrammaKop2":<object id="/schema/types/ExamenprogrammaKop2/">{
+                                "label":"examenprogramma_kop2",
                                 "properties":{
                                     "title":<link>"/schema/properties/title/",
                                     "description":<link>"/schema/properties/description/",
@@ -562,22 +479,8 @@
                                     "unreleased":<link>"/schema/properties/unreleased/"
                                 },
                                 "children":{
-                                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
-                                }
-                            },
-                            "ExamenprogrammaKop1":<object id="/schema/types/ExamenprogrammaKop1/">{
-                                "label":"examenprogramma_kop1",
-                                "properties":{
-                                    "title":<link>"/schema/properties/title/",
-                                    "description":<link>"/schema/properties/description/",
-                                    "id":<link>"/schema/properties/id/",
-                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                    "replaces":<link>"/schema/properties/replaces/",
-                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                },
-                                "children":{
-                                    "ExamenprogrammaKop2":<object id="/schema/types/ExamenprogrammaKop2/">{
-                                        "label":"examenprogramma_kop2",
+                                    "ExamenprogrammaKop3":<object id="/schema/types/ExamenprogrammaKop3/">{
+                                        "label":"examenprogramma_kop3",
                                         "properties":{
                                             "title":<link>"/schema/properties/title/",
                                             "description":<link>"/schema/properties/description/",
@@ -587,8 +490,8 @@
                                             "unreleased":<link>"/schema/properties/unreleased/"
                                         },
                                         "children":{
-                                            "ExamenprogrammaKop3":<object id="/schema/types/ExamenprogrammaKop3/">{
-                                                "label":"examenprogramma_kop3",
+                                            "ExamenprogrammaKop4":<object id="/schema/types/ExamenprogrammaKop4/">{
+                                                "label":"examenprogramma_kop4",
                                                 "properties":{
                                                     "title":<link>"/schema/properties/title/",
                                                     "description":<link>"/schema/properties/description/",
@@ -598,8 +501,8 @@
                                                     "unreleased":<link>"/schema/properties/unreleased/"
                                                 },
                                                 "children":{
-                                                    "ExamenprogrammaKop4":<object id="/schema/types/ExamenprogrammaKop4/">{
-                                                        "label":"examenprogramma_kop4",
+                                                    "ExamenprogrammaBody":<object id="/schema/types/ExamenprogrammaBody/">{
+                                                        "label":"examenprogramma_body",
                                                         "properties":{
                                                             "title":<link>"/schema/properties/title/",
                                                             "description":<link>"/schema/properties/description/",
@@ -609,8 +512,8 @@
                                                             "unreleased":<link>"/schema/properties/unreleased/"
                                                         },
                                                         "children":{
-                                                            "ExamenprogrammaBody":<object id="/schema/types/ExamenprogrammaBody/">{
-                                                                "label":"examenprogramma_body",
+                                                            "Tag":<object id="/schema/types/Tag/">{
+                                                                "label":"tag",
                                                                 "properties":{
                                                                     "title":<link>"/schema/properties/title/",
                                                                     "description":<link>"/schema/properties/description/",
@@ -620,79 +523,65 @@
                                                                     "unreleased":<link>"/schema/properties/unreleased/"
                                                                 },
                                                                 "children":{
-                                                                    "Tag":<object id="/schema/types/Tag/">{
-                                                                        "label":"tag",
+                                                                    "FoDoelzin":<object id="/schema/types/FoDoelzin/">{
+                                                                        "label":"fo_doelzin",
                                                                         "properties":{
                                                                             "title":<link>"/schema/properties/title/",
                                                                             "description":<link>"/schema/properties/description/",
+                                                                            "prefix":<link>"/schema/properties/prefix/",
+                                                                            "soort":<object id="/schema/properties/soort/">{
+                                                                                "type":"string",
+                                                                                "enum":[
+                                                                                    "kerndoel",
+                                                                                    "eindterm"
+                                                                                ]
+                                                                            },
+                                                                            "ce":<link>"/schema/properties/ce/",
+                                                                            "se":<link>"/schema/properties/se/",
                                                                             "id":<link>"/schema/properties/id/",
                                                                             "replacedBy":<link>"/schema/properties/replacedBy/",
                                                                             "replaces":<link>"/schema/properties/replaces/",
                                                                             "unreleased":<link>"/schema/properties/unreleased/"
                                                                         },
                                                                         "children":{
-                                                                            "FoDoelzin":<object id="/schema/types/FoDoelzin/">{
-                                                                                "label":"fo_doelzin",
+                                                                            "FoUitwerking":<object id="/schema/types/FoUitwerking/">{
+                                                                                "label":"fo_uitwerking",
                                                                                 "properties":{
                                                                                     "title":<link>"/schema/properties/title/",
                                                                                     "description":<link>"/schema/properties/description/",
                                                                                     "prefix":<link>"/schema/properties/prefix/",
-                                                                                    "soort":<object id="/schema/properties/soort/">{
-                                                                                        "type":"string",
-                                                                                        "enum":[
-                                                                                            "kerndoel",
-                                                                                            "eindterm"
-                                                                                        ]
-                                                                                    },
-                                                                                    "ce_se":<link>"/schema/properties/ce_se/",
                                                                                     "id":<link>"/schema/properties/id/",
                                                                                     "replacedBy":<link>"/schema/properties/replacedBy/",
                                                                                     "replaces":<link>"/schema/properties/replaces/",
                                                                                     "unreleased":<link>"/schema/properties/unreleased/"
                                                                                 },
                                                                                 "children":{
-                                                                                    "FoUitwerking":<object id="/schema/types/FoUitwerking/">{
-                                                                                        "label":"fo_uitwerking",
-                                                                                        "properties":{
-                                                                                            "title":<link>"/schema/properties/title/",
-                                                                                            "description":<link>"/schema/properties/description/",
-                                                                                            "prefix":<link>"/schema/properties/prefix/",
-                                                                                            "id":<link>"/schema/properties/id/",
-                                                                                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                                                                                            "replaces":<link>"/schema/properties/replaces/",
-                                                                                            "unreleased":<link>"/schema/properties/unreleased/"
-                                                                                        },
-                                                                                        "children":{
-                                                                                            "Niveau":<link>"/schema/types/Niveau/"
-                                                                                        }
-                                                                                    },
-                                                                                    "FoToelichting":<object id="/schema/types/FoToelichting/">{
-                                                                                        "label":"fo_toelichting",
-                                                                                        "properties":{
-                                                                                            "title":<link>"/schema/properties/title/",
-                                                                                            "description":<link>"/schema/properties/description/",
-                                                                                            "prefix":<link>"/schema/properties/prefix/",
-                                                                                            "id":<link>"/schema/properties/id/",
-                                                                                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                                                                                            "replaces":<link>"/schema/properties/replaces/",
-                                                                                            "unreleased":<link>"/schema/properties/unreleased/"
-                                                                                        },
-                                                                                        "children":{
-                                                                                            "Niveau":<link>"/schema/types/Niveau/"
-                                                                                        }
-                                                                                    }
+                                                                                    "Niveau":<link>"/schema/types/Niveau/"
                                                                                 }
                                                                             },
-                                                                            "FoToelichting":<link>"/schema/types/FoToelichting/",
-                                                                            "FoUitwerking":<link>"/schema/types/FoUitwerking/"
+                                                                            "FoToelichting":<object id="/schema/types/FoToelichting/">{
+                                                                                "label":"fo_toelichting",
+                                                                                "properties":{
+                                                                                    "title":<link>"/schema/properties/title/",
+                                                                                    "description":<link>"/schema/properties/description/",
+                                                                                    "prefix":<link>"/schema/properties/prefix/",
+                                                                                    "id":<link>"/schema/properties/id/",
+                                                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                                                                    "replaces":<link>"/schema/properties/replaces/",
+                                                                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                                                                },
+                                                                                "children":{
+                                                                                    "Niveau":<link>"/schema/types/Niveau/"
+                                                                                }
+                                                                            }
                                                                         }
-                                                                    }
+                                                                    },
+                                                                    "FoToelichting":<link>"/schema/types/FoToelichting/",
+                                                                    "FoUitwerking":<link>"/schema/types/FoUitwerking/"
                                                                 }
-                                                            },
-                                                            "Tag":<link>"/schema/types/Tag/"
+                                                            }
                                                         }
                                                     },
-                                                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
                                                     "Tag":<link>"/schema/types/Tag/"
                                                 }
                                             },
@@ -703,21 +592,19 @@
                                     "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
                                     "Tag":<link>"/schema/types/Tag/"
                                 }
-                            }
-                        },
-                        "root":true
-                    },
-                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-                    "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
-                    "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
-                    "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
-                    "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
-                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-                    "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
-                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-                    "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/"
-                }
-            }
+                            },
+                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
+                            "Tag":<link>"/schema/types/Tag/"
+                        }
+                    }
+                },
+                "root":true
+            },
+            "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
+            "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
+            "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
+            "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
+            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
         },
         "ExamenprogrammaBg":<object id="/schema/contexts/ExamenprogrammaBg/">{
             "label":"examenprogramma-bg",
@@ -863,23 +750,54 @@
                 "root":true
             }
         },
-        "Examenprogramma":<object id="/schema/contexts/Examenprogramma/">{
-            "label":"examenprogramma",
-            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
-            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-            "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
-            "Examenprogramma":<link>"/schema/types/Examenprogramma/",
-            "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
-            "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
-            "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
-            "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
-            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
-        },
         "Kerndoelen":<object id="/schema/contexts/Kerndoelen/">{
             "label":"kerndoelen",
             "Kerndoel":<link>"/schema/types/Kerndoel/",
-            "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
+            "KerndoelVakleergebied":<object id="/schema/types/KerndoelVakleergebied/">{
+                "label":"kerndoel_vakleergebied",
+                "properties":{
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Kerndoel":<link>"/schema/types/Kerndoel/",
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "KerndoelDomein":<object id="/schema/types/KerndoelDomein/">{
+                        "label":"kerndoel_domein",
+                        "properties":{
+                            "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            "Kerndoel":<link>"/schema/types/Kerndoel/"
+                        }
+                    },
+                    "KerndoelUitstroomprofiel":<object id="/schema/types/KerndoelUitstroomprofiel/">{
+                        "label":"kerndoel_uitstroomprofiel",
+                        "properties":{
+                            "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            
+                        }
+                    }
+                },
+                "root":true
+            },
             "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
             "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/"
         },
@@ -1062,6 +980,12 @@
                     },
                     "url":<link>"/schema/properties/url/",
                     "versie":<link>"/schema/properties/versie/",
+                    "status":<object id="/schema/properties/status/">{
+                        "type":"string"
+                    },
+                    "jaargang":<object id="/schema/properties/jaargang/">{
+                        "type":"string"
+                    },
                     "title":<link>"/schema/properties/title/",
                     "description":<link>"/schema/properties/description/",
                     "id":<link>"/schema/properties/id/",
@@ -1077,7 +1001,8 @@
                         "label":"syllabus_specifieke_eindterm",
                         "properties":{
                             "description":<link>"/schema/properties/description/",
-                            "ce_se":<link>"/schema/properties/ce_se/",
+                            "ce":<link>"/schema/properties/ce/",
+                            "se":<link>"/schema/properties/se/",
                             "prefix":<link>"/schema/properties/prefix/",
                             "title":<link>"/schema/properties/title/",
                             "id":<link>"/schema/properties/id/",
@@ -1093,7 +1018,8 @@
                                 "label":"syllabus_vakbegrip",
                                 "properties":{
                                     "description":<link>"/schema/properties/description/",
-                                    "ce_se":<link>"/schema/properties/ce_se/",
+                                    "ce":<link>"/schema/properties/ce/",
+                                    "se":<link>"/schema/properties/se/",
                                     "prefix":<link>"/schema/properties/prefix/",
                                     "title":<link>"/schema/properties/title/",
                                     "id":<link>"/schema/properties/id/",
@@ -1109,7 +1035,8 @@
                                 "label":"syllabus_toelichting",
                                 "properties":{
                                     "description":<link>"/schema/properties/description/",
-                                    "ce_se":<link>"/schema/properties/ce_se/",
+                                    "ce":<link>"/schema/properties/ce/",
+                                    "se":<link>"/schema/properties/se/",
                                     "prefix":<link>"/schema/properties/prefix/",
                                     "title":<link>"/schema/properties/title/",
                                     "id":<link>"/schema/properties/id/",
@@ -1133,111 +1060,6 @@
             "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
             "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
             "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/"
-        },
-        "Referentiekader":<object id="/schema/contexts/Referentiekader/">{
-            "label":"referentiekader",
-            "RefVakleergebied":<object id="/schema/types/RefVakleergebied/">{
-                "label":"ref_vakleergebied",
-                "properties":{
-                    "prefix":<link>"/schema/properties/prefix/",
-                    "Vakleergebied":{
-                        "type":"object"
-                    },
-                    "description":<link>"/schema/properties/description/",
-                    "title":<link>"/schema/properties/title/",
-                    "id":<link>"/schema/properties/id/",
-                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                    "replaces":<link>"/schema/properties/replaces/",
-                    "unreleased":<link>"/schema/properties/unreleased/"
-                },
-                "children":{
-                    "Niveau":<link>"/schema/types/Niveau/",
-                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
-                    "RefDomein":<object id="/schema/types/RefDomein/">{
-                        "label":"ref_domein",
-                        "properties":{
-                            "prefix":<link>"/schema/properties/prefix/",
-                            "description":<link>"/schema/properties/description/",
-                            "title":<link>"/schema/properties/title/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            "RefSubdomein":<object id="/schema/types/RefSubdomein/">{
-                                "label":"ref_subdomein",
-                                "properties":{
-                                    "prefix":<link>"/schema/properties/prefix/",
-                                    "description":<link>"/schema/properties/description/",
-                                    "title":<link>"/schema/properties/title/",
-                                    "id":<link>"/schema/properties/id/",
-                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                    "replaces":<link>"/schema/properties/replaces/",
-                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                },
-                                "children":{
-                                    "RefOnderwerp":<object id="/schema/types/RefOnderwerp/">{
-                                        "label":"ref_onderwerp",
-                                        "properties":{
-                                            "prefix":<link>"/schema/properties/prefix/",
-                                            "description":<link>"/schema/properties/description/",
-                                            "title":<link>"/schema/properties/title/",
-                                            "id":<link>"/schema/properties/id/",
-                                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                                            "replaces":<link>"/schema/properties/replaces/",
-                                            "unreleased":<link>"/schema/properties/unreleased/"
-                                        },
-                                        "children":{
-                                            "RefDeelonderwerp":<object id="/schema/types/RefDeelonderwerp/">{
-                                                "label":"ref_deelonderwerp",
-                                                "properties":{
-                                                    "prefix":<link>"/schema/properties/prefix/",
-                                                    "description":<link>"/schema/properties/description/",
-                                                    "title":<link>"/schema/properties/title/",
-                                                    "id":<link>"/schema/properties/id/",
-                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                                    "replaces":<link>"/schema/properties/replaces/",
-                                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                                },
-                                                "children":{
-                                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
-                                                }
-                                            },
-                                            "RefTekstkenmerk":<object id="/schema/types/RefTekstkenmerk/">{
-                                                "label":"ref_tekstkenmerk",
-                                                "properties":{
-                                                    "prefix":<link>"/schema/properties/prefix/",
-                                                    "description":<link>"/schema/properties/description/",
-                                                    "title":<link>"/schema/properties/title/",
-                                                    "id":<link>"/schema/properties/id/",
-                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                                    "replaces":<link>"/schema/properties/replaces/",
-                                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                                },
-                                                "children":{
-                                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
-                                                }
-                                            },
-                                            "Doelniveau":<link>"/schema/types/Doelniveau/"
-                                        }
-                                    },
-                                    "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
-                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
-                                }
-                            },
-                            "Doelniveau":<link>"/schema/types/Doelniveau/"
-                        }
-                    },
-                    "Doelniveau":<link>"/schema/types/Doelniveau/"
-                },
-                "root":true
-            },
-            "RefDomein":<link>"/schema/types/RefDomein/",
-            "RefSubdomein":<link>"/schema/types/RefSubdomein/",
-            "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
-            "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
-            "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/"
         },
         "Niveauhierarchie":<object id="/schema/contexts/Niveauhierarchie/">{
             "label":"niveauhierarchie",
@@ -1352,25 +1174,110 @@
             "NhBouw":<link>"/schema/types/NhBouw/",
             "NhNiveau":<link>"/schema/types/NhNiveau/"
         },
-        "Samenhang":<object id="/schema/contexts/Samenhang/">{
-            "label":"samenhang",
-            "Tag":<link>"/schema/types/Tag/",
-            "Relatie":<object id="/schema/types/Relatie/">{
-                "label":"relatie",
+        "Referentiekader":<object id="/schema/contexts/Referentiekader/">{
+            "label":"referentiekader",
+            "RefVakleergebied":<object id="/schema/types/RefVakleergebied/">{
+                "label":"ref_vakleergebied",
                 "properties":{
-                    "title":<link>"/schema/properties/title/",
+                    "prefix":<link>"/schema/properties/prefix/",
+                    "Vakleergebied":{
+                        "type":"object"
+                    },
                     "description":<link>"/schema/properties/description/",
+                    "title":<link>"/schema/properties/title/",
                     "id":<link>"/schema/properties/id/",
                     "replacedBy":<link>"/schema/properties/replacedBy/",
                     "replaces":<link>"/schema/properties/replaces/",
                     "unreleased":<link>"/schema/properties/unreleased/"
                 },
                 "children":{
-                    "FoDoelzin":<link>"/schema/types/FoDoelzin/",
-                    "FoToelichting":<link>"/schema/types/FoToelichting/",
-                    "FoUitwerking":<link>"/schema/types/FoUitwerking/"
-                }
-            }
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
+                    "RefDomein":<object id="/schema/types/RefDomein/">{
+                        "label":"ref_domein",
+                        "properties":{
+                            "prefix":<link>"/schema/properties/prefix/",
+                            "description":<link>"/schema/properties/description/",
+                            "title":<link>"/schema/properties/title/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            "RefSubdomein":<object id="/schema/types/RefSubdomein/">{
+                                "label":"ref_subdomein",
+                                "properties":{
+                                    "prefix":<link>"/schema/properties/prefix/",
+                                    "description":<link>"/schema/properties/description/",
+                                    "title":<link>"/schema/properties/title/",
+                                    "id":<link>"/schema/properties/id/",
+                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                    "replaces":<link>"/schema/properties/replaces/",
+                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                },
+                                "children":{
+                                    "RefOnderwerp":<object id="/schema/types/RefOnderwerp/">{
+                                        "label":"ref_onderwerp",
+                                        "properties":{
+                                            "prefix":<link>"/schema/properties/prefix/",
+                                            "description":<link>"/schema/properties/description/",
+                                            "title":<link>"/schema/properties/title/",
+                                            "id":<link>"/schema/properties/id/",
+                                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                                            "replaces":<link>"/schema/properties/replaces/",
+                                            "unreleased":<link>"/schema/properties/unreleased/"
+                                        },
+                                        "children":{
+                                            "RefDeelonderwerp":<object id="/schema/types/RefDeelonderwerp/">{
+                                                "label":"ref_deelonderwerp",
+                                                "properties":{
+                                                    "prefix":<link>"/schema/properties/prefix/",
+                                                    "description":<link>"/schema/properties/description/",
+                                                    "title":<link>"/schema/properties/title/",
+                                                    "id":<link>"/schema/properties/id/",
+                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                                    "replaces":<link>"/schema/properties/replaces/",
+                                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                                },
+                                                "children":{
+                                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
+                                                }
+                                            },
+                                            "RefTekstkenmerk":<object id="/schema/types/RefTekstkenmerk/">{
+                                                "label":"ref_tekstkenmerk",
+                                                "properties":{
+                                                    "prefix":<link>"/schema/properties/prefix/",
+                                                    "description":<link>"/schema/properties/description/",
+                                                    "title":<link>"/schema/properties/title/",
+                                                    "id":<link>"/schema/properties/id/",
+                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                                    "replaces":<link>"/schema/properties/replaces/",
+                                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                                },
+                                                "children":{
+                                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
+                                                }
+                                            },
+                                            "Doelniveau":<link>"/schema/types/Doelniveau/"
+                                        }
+                                    },
+                                    "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
+                                    "Doelniveau":<link>"/schema/types/Doelniveau/"
+                                }
+                            },
+                            "Doelniveau":<link>"/schema/types/Doelniveau/"
+                        }
+                    },
+                    "Doelniveau":<link>"/schema/types/Doelniveau/"
+                },
+                "root":true
+            },
+            "RefDomein":<link>"/schema/types/RefDomein/",
+            "RefSubdomein":<link>"/schema/types/RefSubdomein/",
+            "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
+            "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
+            "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/"
         },
         "Fo":<object id="/schema/contexts/Fo/">{
             "label":"fo",
@@ -1429,6 +1336,114 @@
             "FoDoelzin":<link>"/schema/types/FoDoelzin/",
             "FoUitwerking":<link>"/schema/types/FoUitwerking/",
             "FoToelichting":<link>"/schema/types/FoToelichting/"
+        },
+        "Samenhang":<object id="/schema/contexts/Samenhang/">{
+            "label":"samenhang",
+            "Tag":<link>"/schema/types/Tag/",
+            "Relatie":<object id="/schema/types/Relatie/">{
+                "label":"relatie",
+                "properties":{
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "FoDoelzin":<link>"/schema/types/FoDoelzin/",
+                    "FoToelichting":<link>"/schema/types/FoToelichting/",
+                    "FoUitwerking":<link>"/schema/types/FoUitwerking/"
+                }
+            }
+        },
+        "Doelgroepteksten":<object id="/schema/contexts/Doelgroepteksten/">{
+            "label":"doelgroepteksten",
+            "Leerlingtekst":<object id="/schema/types/Leerlingtekst/">{
+                "label":"leerlingtekst",
+                "properties":{
+                    "description":<link>"/schema/properties/description/",
+                    "title":<link>"/schema/properties/title/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Doel":<link>"/schema/types/Doel/",
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "Doelniveau":<link>"/schema/types/Doelniveau/",
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
+                    "Deprecated":<object id="ce6e75b1-ffab-4d38-8a31-144517ed8cef">{
+                        "label":"deprecated",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "Alias":<object id="0defd443-a258-4862-8068-e2ba60d40781">{
+                        "label":"alias",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "Vak":<object id="7256fcde-be50-4275-970a-39c493019b97">{
+                        "label":"vak",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "LpibVakkern":<object id="748edca0-0690-4568-94a8-031a858f153b">{
+                        "label":"lpib_vakkern",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "LpibVaksubkern":<object id="13332efb-6018-4b73-af98-06a727850d75">{
+                        "label":"lpib_vaksubkern",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "LpibVakinhoud":<object id="ffc4dbd9-e077-4ae2-8d6d-09f6c09ffd5f">{
+                        "label":"lpib_vakinhoud",
+                        "properties":{
+                            
+                        },
+                        "children":{
+                            
+                        }
+                    },
+                    "Kerndoel":<link>"/schema/types/Kerndoel/",
+                    "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
+                    "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/",
+                    "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
+                    "Examenprogramma":<link>"/schema/types/Examenprogramma/",
+                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
+                    "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
+                    "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
+                    "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
+                    "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
+                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+                    "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
+                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+                    "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/"
+                }
+            }
         }
     },
     "types":{
@@ -1450,23 +1465,14 @@
         "ErkCandobeschrijving":<link>"/schema/types/ErkCandobeschrijving/",
         "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
         "ErkLesidee":<link>"/schema/types/ErkLesidee/",
-        "Leerlingtekst":<link>"/schema/types/Leerlingtekst/",
-        "Deprecated":<link>"0e936d4a-ba90-42cf-b3a4-ffc662bde844",
-        "Alias":<link>"ddebddfd-6541-432e-8034-95ead6a540ff",
-        "Vak":<link>"8f55a48c-7440-4dad-b8e3-089226973e95",
-        "LpibVakkern":<link>"5e4325ae-8bab-45ef-89f8-334e430aac8a",
-        "LpibVaksubkern":<link>"77e5793b-5ad3-4151-92b3-f92417c37a75",
-        "LpibVakinhoud":<link>"d2de524f-bf66-4c74-a221-344666533f62",
-        "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
-        "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/",
-        "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
-        "Examenprogramma":<link>"/schema/types/Examenprogramma/",
-        "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-        "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
-        "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
-        "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
-        "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
         "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
+        "Examenprogramma":<link>"/schema/types/Examenprogramma/",
+        "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
+        "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
+        "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
+        "Tag":<link>"/schema/types/Tag/",
+        "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
+        "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
         "ExamenprogrammaBgGlobaleEindterm":<link>"/schema/types/ExamenprogrammaBgGlobaleEindterm/",
         "ExamenprogrammaBgDeeltaak":<link>"/schema/types/ExamenprogrammaBgDeeltaak/",
         "ExamenprogrammaBgKerndeel":<link>"/schema/types/ExamenprogrammaBgKerndeel/",
@@ -1476,7 +1482,9 @@
         "ExamenprogrammaBgModule":<link>"/schema/types/ExamenprogrammaBgModule/",
         "ExamenprogrammaBgKern":<link>"/schema/types/ExamenprogrammaBgKern/",
         "ExamenprogrammaBgProfiel":<link>"/schema/types/ExamenprogrammaBgProfiel/",
-        "Tag":<link>"/schema/types/Tag/",
+        "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
+        "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
+        "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/",
         "InhVakleergebied":<link>"/schema/types/InhVakleergebied/",
         "InhInhoudslijn":<link>"/schema/types/InhInhoudslijn/",
         "InhCluster":<link>"/schema/types/InhCluster/",
@@ -1491,25 +1499,32 @@
         "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
         "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
         "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/",
-        "RefVakleergebied":<link>"/schema/types/RefVakleergebied/",
-        "RefDomein":<link>"/schema/types/RefDomein/",
-        "RefSubdomein":<link>"/schema/types/RefSubdomein/",
-        "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
-        "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
-        "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/",
         "NhCategorie":<link>"/schema/types/NhCategorie/",
         "NhSector":<link>"/schema/types/NhSector/",
         "NhNiveau":<link>"/schema/types/NhNiveau/",
         "NhSchoolsoort":<link>"/schema/types/NhSchoolsoort/",
         "NhBouw":<link>"/schema/types/NhBouw/",
         "NhLeerweg":<link>"/schema/types/NhLeerweg/",
-        "FoDoelzin":<link>"/schema/types/FoDoelzin/",
-        "FoToelichting":<link>"/schema/types/FoToelichting/",
-        "FoUitwerking":<link>"/schema/types/FoUitwerking/",
-        "Relatie":<link>"/schema/types/Relatie/",
+        "RefVakleergebied":<link>"/schema/types/RefVakleergebied/",
+        "RefDomein":<link>"/schema/types/RefDomein/",
+        "RefSubdomein":<link>"/schema/types/RefSubdomein/",
+        "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
+        "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
+        "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/",
         "FoSet":<link>"/schema/types/FoSet/",
         "FoDomein":<link>"/schema/types/FoDomein/",
-        "FoSubdomein":<link>"/schema/types/FoSubdomein/"
+        "FoSubdomein":<link>"/schema/types/FoSubdomein/",
+        "FoDoelzin":<link>"/schema/types/FoDoelzin/",
+        "FoUitwerking":<link>"/schema/types/FoUitwerking/",
+        "FoToelichting":<link>"/schema/types/FoToelichting/",
+        "Relatie":<link>"/schema/types/Relatie/",
+        "Leerlingtekst":<link>"/schema/types/Leerlingtekst/",
+        "Deprecated":<link>"ce6e75b1-ffab-4d38-8a31-144517ed8cef",
+        "Alias":<link>"0defd443-a258-4862-8068-e2ba60d40781",
+        "Vak":<link>"7256fcde-be50-4275-970a-39c493019b97",
+        "LpibVakkern":<link>"748edca0-0690-4568-94a8-031a858f153b",
+        "LpibVaksubkern":<link>"13332efb-6018-4b73-af98-06a727850d75",
+        "LpibVakinhoud":<link>"ffc4dbd9-e077-4ae2-8d6d-09f6c09ffd5f"
     },
     "properties":{
         "id":<link>"/schema/properties/id/",
@@ -1523,6 +1538,7 @@
         "unreleased":<link>"/schema/properties/unreleased/",
         "bron":<link>"/schema/properties/bron/",
         "aanbodid":<link>"/schema/properties/aanbodid/",
+        "type":<link>"/schema/properties/type/",
         "category":<link>"/schema/properties/category/",
         "algemeen":<link>"/schema/properties/algemeen/",
         "isempty":<link>"/schema/properties/isempty/",
@@ -1535,6 +1551,8 @@
         "versie":<link>"/schema/properties/versie/",
         "kerndoelLabel":<link>"/schema/properties/kerndoelLabel/",
         "examenjaar":<link>"/schema/properties/examenjaar/",
+        "status":<link>"/schema/properties/status/",
+        "jaargang":<link>"/schema/properties/jaargang/",
         "karakteristiek":<link>"/schema/properties/karakteristiek/",
         "soort":<link>"/schema/properties/soort/"
     }

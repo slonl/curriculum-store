@@ -2,20 +2,23 @@ import JSONTag from '@muze-nl/jsontag'
 import serialize, { stringify } from '@muze-nl/od-jsontag/src/serialize.mjs'
 import fs from 'node:fs'
 
-if (process.argv.length<=3) {
-	console.log('usage: node ./convert.mjs {inputfile} {outputfile}')
+if (process.argv.length<=4) {
+	console.log('usage: node ./convert.mjs {schemaFile} {inputfile} {outputfile}')
 	process.exit()
 }
 
 // parse command line
-let inputFile = process.argv[2]
-let outputFile = process.argv[3]
+let schemaFile = process.argv[2]
+let inputFile = process.argv[3]
+let outputFile = process.argv[4]
 
 // load file
+let schema = fs.readFileSync(schemaFile, 'utf-8')
 let input = fs.readFileSync(inputFile, 'utf-8')
 
 // parse jsontag
 let meta = {}
+meta.schema = JSONTag.parse(schema)
 let dataspace = JSONTag.parse(input, null, meta)
 
 /*
@@ -109,19 +112,17 @@ function indexRoots(data) {
     }
 
     console.log('Indexing roots')
-    for (let schema in data.schema) {
-        for (let entityType in data.schema[schema]) {
-            if (!data.schema[schema][entityType].root) {
-                continue
+    for (let entityType in meta.schema.types) {
+        if (!meta.schema.types[entityType].root) {
+            continue
+        }
+        let rootType = entityType
+        if (Array.isArray(data[rootType])) {
+            for ( let e of data[rootType] ) {
+                registerRoot(e, e)
             }
-            let rootType = entityType
-            if (Array.isArray(data[rootType])) {
-                for ( let e of data[rootType] ) {
-                    registerRoot(e, e)
-                }
-            } else {
-                console.error(rootType+' not found')
-            }
+        } else {
+            console.error(rootType+' not found')
         }
     }
 
@@ -135,19 +136,44 @@ function hideReplace(data) {
         for (let e of a) {
             if (e.replaces) {
                 Object.defineProperty(e, 'replaces', {
-                    enumerable: false
+                    enumerable: false,
+                    value: e.replaces,
+                    writable: true,
+                    configurable: true
                 })
             }
             if (e.replacedBy) {
                 Object.defineProperty(e, 'replacedBy', {
-                    enumerable: false
+                    enumerable: false,
+                    value: e.replacedBy,
+                    writable: true,
+                    configurable: true
                 })
             }
         }
     }
 }
 
+function hideNiveauIndex(data) {
+    for (let a of Object.values(data)) {
+        if (!Array.isArray(a)) {
+            continue
+        }
+        for (let e of a) {
+            if (e.NiveauIndex) {
+                Object.defineProperty(e, 'NiveauIndex', {
+                    enumerable: false,
+                    value: e.NiveauIndex,
+                    writable: true,
+                    configurable: true
+                })
+            }
+        }
+    }    
+}
+
 hideReplace(dataspace) // prevents cycles in the data
+hideNiveauIndex(dataspace) // hides NiveauIndex in results, unless explicitly requested
 sloIndex(dataspace) // adds reverse links from child to parent
 indexRoots(dataspace) // adds the set of ultimate root entities for each child entity
 console.log('done')
