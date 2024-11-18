@@ -391,12 +391,14 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		}
 		niveaus = flatten(niveaus).filter(Boolean)
 		if (niveaus.length && typeof entity.NiveauIndex === 'undefined') {
-			Object.defineProperty(entity, 'NiveauIndex', {
-				value: [],
-				enumerable: false,
-				writable: true,
-				configurable: true
-			})
+			entity.NiveauIndex = []
+			// NOTE: do not make NiveauIndex non-enumerable - or it won't show up in the tree query
+			// Object.defineProperty(entity, 'NiveauIndex', {
+			// 	value: [],
+			// 	enumerable: false,
+			// 	writable: true,
+			// 	configurable: true
+			// })
 		}
 		if (niveaus.length || entity.NiveauIndex) {
 			niveaus = niveaus.filter(n => entity.NiveauIndex.findIndex(ni => ni.id==n.id)===-1)

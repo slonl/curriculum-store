@@ -154,26 +154,27 @@ function hideReplace(data) {
     }
 }
 
-function hideNiveauIndex(data) {
-    for (let a of Object.values(data)) {
-        if (!Array.isArray(a)) {
-            continue
-        }
-        for (let e of a) {
-            if (e.NiveauIndex) {
-                Object.defineProperty(e, 'NiveauIndex', {
-                    enumerable: false,
-                    value: e.NiveauIndex,
-                    writable: true,
-                    configurable: true
-                })
-            }
-        }
-    }    
-}
+// IMPORTANT: Do not hide the NiveauIndex, or it won't be included in the tree query
+// function hideNiveauIndex(data) {
+//     for (let a of Object.values(data)) {
+//         if (!Array.isArray(a)) {
+//             continue
+//         }
+//         for (let e of a) {
+//             if (e.NiveauIndex) {
+//                 Object.defineProperty(e, 'NiveauIndex', {
+//                     enumerable: false,
+//                     value: e.NiveauIndex,
+//                     writable: true,
+//                     configurable: true
+//                 })
+//             }
+//         }
+//     }    
+// }
 
 hideReplace(dataspace) // prevents cycles in the data
-hideNiveauIndex(dataspace) // hides NiveauIndex in results, unless explicitly requested
+//hideNiveauIndex(dataspace) // hides NiveauIndex in results, unless explicitly requested
 sloIndex(dataspace) // adds reverse links from child to parent
 indexRoots(dataspace) // adds the set of ultimate root entities for each child entity
 console.log('done')
