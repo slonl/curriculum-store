@@ -313,6 +313,10 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 				}
 			})
 		})
+		if (!hasIndex(importedEntity.id)) {
+			importedEntity = addEntity(importedEntity, dataspace, meta)
+			log('new importedEntity '+importedEntity.id)
+		}
 		return newCount
 	}
 
@@ -321,11 +325,20 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		const linkParent = (child, parent) => {
 			log('linkParent '+child.id+' '+parent.id)
 			let updated = false
-			child = fromIndex(child.id)
-			parent = fromIndex(parent.id)
-			const parentType = odJSONTag.getAttribute(parent, 'class');
+			if (hasIndex(child.id)) {
+				child = fromIndex(child.id)
+			}
+			if (hasIndex(parent.id)) {
+				parent = fromIndex(parent.id)
+			}
+			let parentType = odJSONTag.getAttribute(parent, 'class');
 			if (!parentType) {
-				throw new Error('parent '+parent.id+' has no class attribute')
+				parentType = parent['@type']
+				odJSONTag.setAttribute(parent, 'class', parentType);
+				log('parentType from @type '+parentType)
+			}
+			if (!parentType) {
+				throw new Error('parent '+parent.id+' has no type or class attribute')
 			}
 			if (typeof child[parentType] === 'undefined') {
 				Object.defineProperty(child, parentType, {
@@ -439,6 +452,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	log('updated after linkParentProperties '+updatedCount)
 
 	// new children with niveaus may have been imported, or existing children removed
+	log('importedEntity '+importedEntity.id+' class '+odJSONTag.getAttribute(importedEntity, 'class')+' '+hasIndex(importedEntity.id))
 	updateNiveauIndex(importedEntity)
 
 	// add importedRoot entries to all children, if set
@@ -448,9 +462,10 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    	if (existingRoot) {
 		    	importedRoot[i] = existingRoot
 	    	} else {
-	    		importedRoot[i] = null
+	    		importedRoot[i] = null //FIXME: importedRoot should be in index by now
 	    	}
 	    })
+	    importedRoot = importedRoot.filter(Boolean) // remove null
 		updatedCount += updateRoots(importedEntity, importedRoot)
     }
     // remove roots that no longer link (indirectly) to removed children from them
@@ -673,5 +688,5 @@ export function addEntity(entity, dataspace, meta)
     }
     meta.index.id.set('/uuid/'+entity.id, entity)
     log('added /uuid/'+entity.id)
-    return meta.index.id.get('/uuid/'+entity.id)
+    return meta.index.id.get('/uuid/'+entity.id).deref()
 }
