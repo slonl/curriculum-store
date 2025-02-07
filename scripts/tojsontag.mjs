@@ -13,6 +13,7 @@ let storeSchema = {
     types: {},
     properties: {}
 }
+let niveauIndex = {}
 
 function flatten(arr) {
     let result = new Set()
@@ -55,6 +56,15 @@ function addNiveauIndex(entity) {
         }
         niveaus = niveaus.filter(n => entity.NiveauIndex.findIndex(ni => ni.id==n.id)===-1)
         entity.NiveauIndex.splice(entity.NiveauIndex.length, 0, ...niveaus)
+        for (let n of entity.NiveauIndex) {
+            if (!niveauIndex[n.title]) {
+                niveauIndex[n.title] = {}
+            }
+            if (!niveauIndex[n.title][type]) {
+                niveauIndex[n.title][type] = new Set()
+            }
+            niveauIndex[n.title][type].add(entity)
+        }
     }
     return niveaus
 }
@@ -66,6 +76,12 @@ const makeNiveauIndex = () => {
         }
         curriculum.data[typeName].forEach(addNiveauIndex)
     })
+    for (let n in niveauIndex) {
+        for (let t in niveauIndex[n]) {
+            niveauIndex[n][t] = niveauIndex[n][t].size
+        }
+    }
+    curriculum.data.niveauIndex = niveauIndex
 }
 
 const snakeToCamel = str =>
@@ -190,14 +206,14 @@ async function main() {
                             storeSchema.types[CamelProp].label = prop
                         }
                         cTypeDef.children[CamelProp] = storeSchema.types[CamelProp]
-			if (CamelProp=='Vakleergebied') {
-				let vtype = parsed[name].definitions[type].properties.vakleergebied_id.type
-				if (vtype!='array') {
-					storeSchema.types[cType].properties.Vakleergebied = {
-						type: "object"
-					}
-				}
-			}
+                        if (CamelProp=='Vakleergebied') {
+                            let vtype = parsed[name].definitions[type].properties.vakleergebied_id.type
+                            if (vtype!='array') {
+                                storeSchema.types[cType].properties.Vakleergebied = {
+                                    type: "object"
+                                }
+                            }
+                        }
                     } else {
                         if (!storeSchema.properties[prop]) {
                             storeSchema.properties[prop] = parsed[name].definitions[type].properties[prop]
