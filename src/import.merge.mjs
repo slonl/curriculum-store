@@ -189,7 +189,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 						if (storedEntity[property]!==importedEntity[property]) {
 							if (typeof importedEntity[property] == 'string') {
 								// only mark dirty if the change is other than whitespace
-								let stored = storedEntity[property].replace(/\s+/g, '')
+								let stored = storedEntity[property]?.replace(/\s+/g, '')
 								let imported = importedEntity[property].replace(/\s+/g, '')
 								storedEntity[property] = importedEntity[property]
 								if (stored !== imported) {
@@ -224,7 +224,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	 */
 	function mergeChildRelations(newValue, entity, property)
 	{
-		const currentValue = entity[property]
+		let currentValue = entity[property]
 	    if (Array.isArray(newValue) || Array.isArray(currentValue)) {
 		    if (!currentValue || !Array.isArray(currentValue)) {
 		        // in case this is the first new child of this type
