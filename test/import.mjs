@@ -98,4 +98,27 @@ tap.test('import tree', t => {
 	t.end()
 })
 
+tap.test('import updated tree', t => {
+	// importEntity needs JSONTag class attributes
+	const tree = JSONTag.parse(`
+<object class="RootType" id="rootid">{
+	"id":"rootid",
+	"prefix":"R",
+	"title":"A root entity",
+	"@type": "RootType",
+	"ChildType": [
+		<object class="ChildType" id="child2id">{
+			"id": "child2id",
+			"prefix": "R/c1",
+			"title": "a replacement child",
+			"@type": "ChildType"
+		}
+	]
+}
+`)
+	const [updatedCount, newCount] = importEntity(tree, [tree], dataspace, meta)
+	t.equal(dataspace.ChildType[0].deleted, true)
+	t.equal(dataspace.ChildType[1], tree.ChildType[0])
+	t.end()
+})
 
