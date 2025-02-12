@@ -69,6 +69,46 @@ export default {
             })
         }
 
+        function deleteEntity(entity) {
+            if (!entity.id) {
+                if (!entity.uuid) {
+                    throw new Error('to be deleted entity missing id and uuid')
+                }
+                entity.id = entity.uuid
+                delete entity.uuid
+            } else {
+                if (entity.id.substring(0,6)=='/uuid/') {
+                    entity.id = entity.id.substring(6)
+                }
+            }            
+            entity = fromIndex(entity.id)
+            if (!entity) {
+                throw new Error('to be deleted entity not found: '+entity.id)
+            }
+            entity.deleted = true
+        }
+
+        function undeleteEntity(entity) {
+            if (!entity.id) {
+                if (!entity.uuid) {
+                    throw new Error('to be restored entity missing id and uuid')
+                }
+                entity.id = entity.uuid
+                delete entity.uuid
+            } else {
+                if (entity.id.substring(0,6)=='/uuid/') {
+                    entity.id = entity.id.substring(6)
+                }
+            }            
+            entity = fromIndex(entity.id)
+            if (!entity) {
+                throw new Error('to be restored entity not found: '+entity.id)
+            }
+            delete entity.deleted
+        }
+
+
+
         function appendEntity(child, type, root=null) {
             if (!child.id) {
                 if (!child.uuid) {
@@ -194,10 +234,39 @@ export default {
                     updatedEntities += importEntity(change.entity, [change.entity], dataspace, meta)
                 break
                 case 'newEntity':
-                    appendEntity(change.entity, change['@type'], [change/entity])
+                    appendEntity(change.entity, change['@type'], [change.entity])
+                break
+                case 'deleteEntity':
+                    entity = fromIndex(change.id)
+                    if (!entity?.id) {
+                        errors.push({
+                            code: 404,
+                            message: `Entity not found: ${change.id}`,
+                            details: {
+                                id: change.id
+                            }
+                        })
+                        log('Entity not found '+change.id)
+                        continue;
+                    }
+                    deleteEntity(entity)
+                break
+                case 'undeleteEntity':
+                    entity = fromIndex(change.id)
+                    if (!entity?.id) {
+                        errors.push({
+                            code: 404,
+                            message: `Entity not found: ${change.id}`,
+                            details: {
+                                id: change.id
+                            }
+                        })
+                        log('Entity not found '+change.id)
+                        continue;
+                    }
+                    undeleteEntity(entity)
                 break
                 case 'updateEntity':
-                default:
                     log('change '+change.id+' '+change.name)
                     // apply change if possible
                     entity = fromIndex(change.id)
@@ -326,6 +395,9 @@ export default {
                             entity.dirty = true
                         }
                     }
+                break
+                default: 
+                    throw new Error('Unknown change name '+change.name)
                 break
             }
         }
