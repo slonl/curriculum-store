@@ -30,6 +30,10 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		importedEntity.id = importedEntity.id.substring(6)
 	}
 
+	function isCommonProperty(prop) {
+		return ['deleted','dirty'].includes(prop)
+	}
+
 	/**
 	 * Tests if all entities match their schema's
 	 * changed e.uuid to e.id property
@@ -64,7 +68,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
                         delete e.niveaus
                         return
 	                }
-	                if (!meta.schema.types[type]?.properties[property]) {
+	                if (!meta.schema.types[type]?.properties[property] && !isCommonProperty(property)) {
 	                    throw new Error('Unknown property '+type+'.'+property, {cause:e})
 	                }
 	            } else if (isChildRelation(property)) {
