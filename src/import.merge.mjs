@@ -71,6 +71,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	                if (!meta.schema.types[type]?.properties[property] && !isCommonProperty(property)) {
 	                    throw new Error('Unknown property '+type+'.'+property, {cause:e})
 	                }
+	                if (property==='dirty' && e.dirty===false) {
+	                	delete e.dirty // dirty can not be set to false (one way latch)
+	                } 
 	            } else if (isChildRelation(property)) {
 	                if (!meta.schema.types[type]?.children[property]) {
 	                    throw new Error('Unknown child relation '+type+'.'+property,{cause:e})
