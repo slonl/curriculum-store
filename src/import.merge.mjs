@@ -83,7 +83,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	                        throw new Error('Child relation '+type+'.'+property+' must be an array',{cause:e})
 	                    }
 	                }
-	            } else {
+	            } else if (property!='NiveauIndex') {
 	            	throw new Error('Unknown property name '+type+'.'+property, {cause: e})
 	            }
 	        })
@@ -538,7 +538,7 @@ function walkTopDown(node, callback) {
 }
 
 export function isChildRelation(property) {
-	return /[A-Z]/.test(property[0])
+	return /[A-Z]/.test(property[0]) && property!='NiveauIndex'
 }
 
 export function isLiteralProperty(property) {
