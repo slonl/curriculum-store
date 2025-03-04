@@ -192,7 +192,8 @@ async function main() {
                     JSONTag.setAttribute(storeSchema.types[cType], 'id', '/schema/types/'+cType+'/')
                 }
                 if (['Examenprogramma','Vakleergebied','LdkVakleergebied','Syllabus','FoDomein','RefVakleergebied','ErkGebied','ErkTaalprofiel',
-                    'ExamenprogrammaBgProfiel','KerndoelVakleergebied','InhVakleergebied','NhCategorie','FoSet'].includes(cType)) {
+                    'ExamenprogrammaBgProfiel','KerndoelVakleergebied','InhVakleergebied','NhCategorie','FoSet','Niveau'].includes(cType))
+                {
                     storeSchema.types[cType].root = true
                 }
                 let cTypeDef = storeSchema.types[cType]
