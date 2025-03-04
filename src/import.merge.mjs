@@ -1,4 +1,5 @@
 import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
+import {getIndex} from '@muze-nl/od-jsontag/src/symbols.mjs'
 import JSONTag from '@muze-nl/jsontag'
 import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
 import applyValues from 'array-apply-partial-diff'
@@ -8,6 +9,15 @@ import { appendFileSync } from 'fs'
 
 function log(message) {
 	appendFileSync(process.cwd()+'/data/import-log.txt', message+"\n")
+}
+
+function getType(e) {
+	let type = odJSONTag.getAttribute(e, 'class')
+	if (!type) {
+    	type = e['@type']
+    	odJSONTag.setAttribute(e, 'class', type)
+    }
+    return type
 }
 
 /**
@@ -41,10 +51,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	function testImportedEntities()
 	{
 	    walkTopDown(importedEntity, e => {
-	    	let type = odJSONTag.getAttribute(e, 'class')
-	    	if (!type) {
-		    	type = e['@type']
-		    }
+	    	let type = getType(e)
 	    	if (!type) {
 	    		throw new Error('No @type given', {cause: e})
 	    	}
@@ -53,7 +60,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    	}
 	        Object.keys(e).forEach(property => {
 	            if (isTemporaryProperty(property)) {
-	                // ignore these, will be removed by appendEntity
+	            	delete e[property]
 	            } else if (isLiteralProperty(property)) {
 	                if (property==='uuid') {
 	                    property = 'id'
@@ -90,6 +97,18 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    })
 	}
 
+	function indexNewEntities() 
+	{
+		walkTopDown(importedEntity, e => {
+			if (!e.id) {
+				throw new Error('Entity has no id', {cause: e})
+			}
+			if (!fromIndex(e.id)) {
+				addNew(e.id, e)
+			}
+		})
+	}
+
 	/**
 	 * Replaces importedEntities with the existing entities, if available
 	 * Merges the changes, appends new root entries to their roots
@@ -104,16 +123,15 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    	let isChanged = false
             let id = importedEntity.id
 	        if (id) {
-	            let storedEntity = fromIndex(id)
+	            let storedEntity = fromIndex(id) || fromNew(id)
 	            if (storedEntity) {
 	                if (mergeImportedEntity(importedEntity, storedEntity)) {
 	                	isChanged = true
 	                }
-	                // if (registerRoot(storedEntity, importedRoot)) {
-	                // 	log('root change detected in '+storedEntity.id)
-	                // 	isChanged = true
-	                // }
                 	return [isChanged, storedEntity]
+	            } else {
+	            	// should not happen
+	            	throw new Error('MergeIfNeeded: Index '+id+' not found')
 	            }
 	        }
 	        return [isChanged, importedEntity]
@@ -153,10 +171,6 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    	} else {
 	    		// log('no change')
 	    	}
-	    	// if (importedRoot) {
-	    	// 	log('register root '+importedRoot)
-		    // 	registerRoot(current, importedRoot)
-		    // }
 	    	// from here on, use the merged storedEntity instead of 
 	    	// the importedEntity
 		    importedEntity = current
@@ -329,11 +343,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 			if (hasIndex(parent.id)) {
 				parent = fromIndex(parent.id)
 			}
-			let parentType = odJSONTag.getAttribute(parent, 'class');
-			if (!parentType) {
-				parentType = parent['@type']
-				odJSONTag.setAttribute(parent, 'class', parentType);
-			}
+			let parentType = getType(parent)
 			if (!parentType) {
 				throw new Error('parent '+parent.id+' has no type or class attribute')
 			}
@@ -421,6 +431,15 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
         return meta.index.id.get('/uuid/'+id)?.deref()
     }
 
+    const newIndex = new Map()
+    function fromNew(id) {
+    	return newIndex.get(id)
+    }
+
+    function addNew(id, ob) {
+        newIndex.set(id, ob)
+    }
+
     /**
      * returns true if an entity with that uuid is in the dataspace
      */
@@ -432,13 +451,16 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	// checks that all entities are valid, throws error otherwise
 	testImportedEntities()
 
-	// adds new entities to the indexes and their type array (e.g. data.Vakleergebied)
-	// must happen before linking, since linked entities may contain links to new entities
-	// and otherwise these wouldn't be in meta.index.id
-	let newCount = appendNewEntities()
+	// make en index for all new entities, so that linkImportedEntities can use that as well
+	indexNewEntities()
 
 	// merges changed entities, replaces imported entities with their (updated) stored versions
+	// can also encounter multiple copies of the same new entities, use the new entities index for those
 	let updatedCount = linkImportedEntities()
+
+	// adds new entities to the indexes and their type array (e.g. data.Vakleergebied)
+	// must happen after linking, so that objects can be replaced with links to existing ones
+	let newCount = appendNewEntities()
 
 	// make sure the reverse/parent properties have the new parents
 	updatedCount += linkParentProperties()
@@ -637,6 +659,7 @@ export function removeParent(child, parent) {
  */
 export function addEntity(entity, dataspace, meta)
 {
+
 	/**
 	 * returns a stored entity by id (only uuid)
 	 */
@@ -657,12 +680,8 @@ export function addEntity(entity, dataspace, meta)
 	if (current) {
 		return current // entity has already been added
 	}
-	const type = entity['@type']
-	for (let key in entity) {
-        if (key[0]=='@' || key[0]=='$') {
-            delete entity[key]
-        }
-    }
+
+    const type = getType(entity)
     entity.unreleased = true
     dataspace[type].push(entity)
     entity = dataspace[type][dataspace[type].length-1]
