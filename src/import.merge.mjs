@@ -109,6 +109,24 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		})
 	}
 
+    function MergeIfNeeded(importedEntity) {
+        let isChanged = false
+        let id = importedEntity.id
+        if (id) {
+            let storedEntity = fromIndex(id) || fromNew(id)
+            if (storedEntity) {
+                if (mergeImportedEntity(importedEntity, storedEntity)) {
+                    isChanged = true
+                }
+                return [isChanged, storedEntity]
+            } else {
+                // should not happen
+                throw new Error('MergeIfNeeded: Index '+id+' not found')
+            }
+        }
+        return [isChanged, importedEntity]
+    }
+
 	/**
 	 * Replaces importedEntities with the existing entities, if available
 	 * Merges the changes, appends new root entries to their roots
@@ -119,24 +137,6 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    /**
 	     * 
 	     */
-	    function MergeIfNeeded(importedEntity) {
-	    	let isChanged = false
-            let id = importedEntity.id
-	        if (id) {
-	            let storedEntity = fromIndex(id) || fromNew(id)
-	            if (storedEntity) {
-	                if (mergeImportedEntity(importedEntity, storedEntity)) {
-	                	isChanged = true
-	                }
-                	return [isChanged, storedEntity]
-	            } else {
-	            	// should not happen
-	            	throw new Error('MergeIfNeeded: Index '+id+' not found')
-	            }
-	        }
-	        return [isChanged, importedEntity]
-	    }
-
 	    walkDepthFirst(importedEntity, (importedEntity) => {
 	        Object.keys(importedEntity).forEach(property => {
 	            if (isChildRelation(property)) {
@@ -315,6 +315,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 							if (!hasIndex(child.id)) {
 								arr[index] = addEntity(child, dataspace, meta)
 								newCount++
+							} else {
+								let [changed,merged] = MergeIfNeeded(child, fromIndex(child.id))
+							 	arr[index] = merged
 							}
 						})
 					} else {
@@ -322,6 +325,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 						if (!hasIndex(child.id)) {
 							entity[property] = addEntity(child, dataspace, meta)
 							newCount++
+						} else {
+							let [changed,merged] = MergeIfNeeded(child, fromIndex(child.id))
+							entity[property] = merged
 						}
 					}
 				}
@@ -329,6 +335,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		})
 		if (!hasIndex(importedEntity.id)) {
 			importedEntity = addEntity(importedEntity, dataspace, meta)
+		} else {
+			let [changed, merged] = MergeIfNeeded(importedEntity, fromIndex(importedEntity.id))
+			importedEntity = merged
 		}
 		return newCount
 	}
@@ -454,13 +463,13 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	// make en index for all new entities, so that linkImportedEntities can use that as well
 	indexNewEntities()
 
-	// merges changed entities, replaces imported entities with their (updated) stored versions
-	// can also encounter multiple copies of the same new entities, use the new entities index for those
-	let updatedCount = linkImportedEntities()
-
 	// adds new entities to the indexes and their type array (e.g. data.Vakleergebied)
 	// must happen after linking, so that objects can be replaced with links to existing ones
 	let newCount = appendNewEntities()
+
+	// merges changed entities, replaces imported entities with their (updated) stored versions
+	// can also encounter multiple copies of the same new entities, use the new entities index for those
+	let updatedCount = linkImportedEntities()
 
 	// make sure the reverse/parent properties have the new parents
 	updatedCount += linkParentProperties()
@@ -683,6 +692,9 @@ export function addEntity(entity, dataspace, meta)
 
     const type = getType(entity)
     entity.unreleased = true
+    if (!dataspace[type]) {
+        dataspace[type] = []
+    }
     dataspace[type].push(entity)
     entity = dataspace[type][dataspace[type].length-1]
     try {
