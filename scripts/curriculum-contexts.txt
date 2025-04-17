@@ -1,13 +1,10 @@
-curriculum-basis
-curriculum-doelgroepteksten
-curriculum-erk
-curriculum-examenprogramma
-curriculum-examenprogramma-bg
-curriculum-inhoudslijnen
-curriculum-kerndoelen
-curriculum-leerdoelenkaarten
-curriculum-syllabus
-curriculum-referentiekader
-curriculum-niveauhierarchie
-curriculum-fo
-curriculum-samenhang
+curriculum-fo:Curriculum Funderend Onderwijs
+curriculum-kerndoelen:Kerndoelen
+curriculum-examenprogramma:Examenprogramma
+curriculum-syllabus:Syllabus
+curriculum-examenprogramma-bg:Examenprogramma Beroepsgericht
+curriculum-referentiekader:Referentiekader
+curriculum-erk:Europoees Referentie Kader
+curriculum-leerdoelenkaarten:Leerdoelenkaarten
+curriculum-inhoudslijnen:Inhoudslijnen
+curriculum-basis:Basis

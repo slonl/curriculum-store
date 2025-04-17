@@ -135,6 +135,15 @@ async function main() {
         .split(/\n/g)             // split the file on newlines
         .map(line => line.trim()) // remove leading and trailing whitespace
         .filter(Boolean)          // filter empty lines
+	.map(schema => {
+            let [schemaPart,name] = schema.split(':',2)
+            let schemaName = schemaPart.substring('curriculum-'.length)
+            storeSchema.contexts[schemaName] = {
+                label: schemaName,
+                title: name
+            }
+            return schemaPart
+        })
 
     // load all contexts from the editor/ and master/ folders
     let loadedSchemas = schemas.map(
@@ -169,12 +178,8 @@ async function main() {
             let name = schema.$id.substring('https://opendata.slo.nl/curriculum/schemas/curriculum-'.length)
             name = name.substring(0, name.length - '/context.json'.length)
             parsed[name] = await curriculum.parseSchema(schema)
-
-            let cName = capitalizeFirstLetter(snakeToCamel(name))
-            storeSchema.contexts[cName] = {
-                label: name
-            }
-            JSONTag.setAttribute(storeSchema.contexts[cName], 'id', '/schema/contexts/'+cName+'/')
+            let cName = name
+            JSONTag.setAttribute(storeSchema.contexts[cName], 'id',  '/schema/contexts/'+cName+'/')
             let typeDef = {
                 label: '',
                 properties: {},
@@ -243,6 +248,7 @@ async function main() {
         fs.writeFileSync('../data/curriculum.jsontag', fileData)
         let schemaData = JSONTag.stringify(storeSchema, null, 4)
         fs.writeFileSync('../data/schema.jsontag', schemaData)
+	console.log('Done')
     })
 }
 

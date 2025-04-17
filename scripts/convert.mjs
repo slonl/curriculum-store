@@ -30,7 +30,7 @@ let dataspace = JSONTag.parse(input, null, meta)
 function sloIndex(root) {
     console.log(Object.keys(root))
     Object.entries(root).forEach(([datatype,dataset]) => {
-        if (datatype==='Deprecated' || datatype==="NiveauIndex" || datatype=='schema') {
+        if (datatype==='Deprecated' || datatype==="niveauIndex" || datatype=='schema') {
             return
         }
         console.log('linking '+datatype+' ('+dataset.length+')')
