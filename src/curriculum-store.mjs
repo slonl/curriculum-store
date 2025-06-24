@@ -11,12 +11,8 @@ async function checkServerAndStart(port) {
     const response = await fetch(`http://localhost:${port}`, {
       signal: AbortSignal.timeout(2000) // 2 second timeout
     });
-    console.log(`Server is already running! Status: ${response.status}`);
-    
-    return true;
-  
+    console.log(`Not starting simplystore: something is already running on the server port: ${response.status}`);  
   } catch (error) {
-    console.log('Server was not running:', error.message);
     console.log('Starting simplystore');
     simplystore.run({
       datafile,
@@ -24,9 +20,6 @@ async function checkServerAndStart(port) {
       port,
       commandsFile,
     }) 
-    
-    return false;
-
   }
 }
 
