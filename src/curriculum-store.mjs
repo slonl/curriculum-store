@@ -17,8 +17,8 @@ async function checkServerAndStart(port) {
     return true;
   
   } catch (error) {
-    console.log('Server is not running:', error.message);
-    
+    console.log('Server was not running:', error.message);
+    console.log('Starting simplystore');
     simplystore.run({
       datafile,
       schemaFile,
