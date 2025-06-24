@@ -1,6 +1,5 @@
 import simplystore from '@muze-nl/simplystore'
 import process from 'node:process'
-import http from 'http'
 
 const datafile     = process.env.DATA_FILE || './data/data.jsontag'
 const schemaFile   = process.env.SCHEMA_FILE || './data/schema.jsontag'
