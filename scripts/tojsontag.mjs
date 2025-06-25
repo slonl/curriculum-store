@@ -58,7 +58,10 @@ function addNiveauIndex(entity) {
         entity.NiveauIndex.splice(entity.NiveauIndex.length, 0, ...niveaus)
         for (let n of entity.NiveauIndex) {
             if (!niveauIndex[n.title]) {
-                niveauIndex[n.title] = {}
+                niveauIndex[n.title] = {
+                    id: n.id,
+                    title: n.title
+                }
             }
             if (!niveauIndex[n.title][type]) {
                 niveauIndex[n.title][type] = new Set()
@@ -78,7 +81,9 @@ const makeNiveauIndex = () => {
     })
     for (let n in niveauIndex) {
         for (let t in niveauIndex[n]) {
-            niveauIndex[n][t] = niveauIndex[n][t].size
+            if (niveauIndex[n][t] instanceof Set) {
+                niveauIndex[n][t] = Array.from(niveauIndex[n][t])
+            }
         }
     }
     curriculum.data.niveauIndex = niveauIndex
