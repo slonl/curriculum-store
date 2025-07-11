@@ -35,6 +35,7 @@ function convertToCamelCase(str) {
 }
 
 function toJSON(ob) {
+/*
 	const type = odJSONTag.getAttribute(ob, 'class')
 	if (!type) {
 		console.log('no type',ob)
@@ -59,7 +60,72 @@ function toJSON(ob) {
 			})
 		}
 	})
+	//FIXME: also handle replaced/replacedBy
+	//and properties of type object
+	//FIXME: keep the order of the original objects properties intact
+*/
+	let result = {}	
+	for (let prop of Object.getOwnPropertyNames(ob)) {
+		if (isValidProp(ob, prop)) {
+			let {key, value} = convertProp(ob, prop)
+			result[key] = value
+		}
+	}
+	if (!result.id) {
+		throw new Error('entity has no .id',ob)
+	}
+	if (result.NiveauIndex) {
+		throw new Error('toJSON result should not have NiveauIndex',result)
+	}
 	return result
+}
+
+function isValidProp(ob, prop) {
+	const type = odJSONTag.getAttribute(ob, 'class')
+	let props = meta.schema.types[type]?.properties
+	if (!props) {
+		throw new Error('entity has no properties in schema', type, ob)
+	}
+	if (props[prop]) {
+		return true
+	}	
+	props = ['deleted','dirty','replaces','replacedBy']
+	if (props.indexOf(prop)!==-1) {
+		return true
+	}
+	const children = meta.schema.types[type]?.children
+	if (children[prop]) {
+		return true
+	}
+	return false
+}
+
+function convertProp(ob, prop) {
+	const type = odJSONTag.getAttribute(ob, 'class')
+	let props = meta.schema.types[type]?.properties
+	let def = {
+		key: prop,
+		value: ob[prop]
+	}
+	if (prop == 'replacedBy' || prop == 'replaces') {
+		def.value = ob[prop].map(e => e.id)
+		return def
+	}
+	if (props[prop]?.type=='object') {
+		def.key = meta.schema.types[prop].label+'_id'
+		def.value = ob[prop].id
+		return def
+	}
+	if (props[prop]) {
+		return def
+	}
+	let children = meta.schema.types[type]?.children
+	if (children[prop]) {
+		def.key = meta.schema.types[prop].label+'_id'
+		def.value = ob[prop].map(e => e.id)
+		return def
+	}
+	return def
 }
 
 function loadCommandStatus(commandStatusFile) {
@@ -133,13 +199,12 @@ async function commitChanges(datafile, commands) {
 		if (fs.existsSync(datafile)) {
 			jsontag = fs.readFileSync(datafile, 'utf-8')
 			dataspace = parse(jsontag, tempMeta) // tempMeta is needed to combine the resultArray, using meta conflicts with meta.index.id
+			updateContexts()
 			// write data back to git repositories
 			if (command && !commits[command.id]) {
-				updateContexts()
 				for (let context of Object.values(meta.schema.contexts)) {
 					let schema = curriculum.schemas[context.label]
 					let schemaName = context.label;
-//					let fullSchemaName = 'curriculum-'+schemaName;
 					console.log('committing',schemaName)
 					const props = Object.keys(schema.properties)
 					for (let propertyName of props) {
@@ -148,15 +213,8 @@ async function commitChanges(datafile, commands) {
 						}
 						if (typeof schema.properties[propertyName]['#file'] != 'undefined') {
 							const fileName = schema.properties[propertyName]['#file']
-//							console.log(schemaName, curriculum.schema, curriculum.schemas)
 							const propCamel = convertToCamelCase(propertyName)
-							let fileData
-							try {
-								fileData = JSON.stringify(curriculum.data[propCamel], null, "\t")
-							} catch(error) {
-								console.error('stringify', error)
-								process.exit()
-							}
+							let fileData = JSON.stringify(curriculum.data[propCamel], null, "\t")
 							if (isChanged(propCamel, fileData)) {
 								console.log('writing',fileName)
 								try {
@@ -187,10 +245,10 @@ async function commitChanges(datafile, commands) {
 						continue
 					}
 					const propCamel = convertToCamelCase(propertyName)
-					lastContents[propertyName] = JSON.stringify(curriculum.data[propCamel], null, "\t")
+					lastContents[propCamel] = JSON.stringify(curriculum.data[propCamel], null, "\t")
+					console.log('updated contents for '+propCamel)
 				}
 			}
-
 			command = commands.shift()
 			datafile = basefile + '.' + command.id + '.' + extension
 		}
