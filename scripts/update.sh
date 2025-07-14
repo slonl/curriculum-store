@@ -10,7 +10,8 @@ set -o pipefail # Return exit status of the last command in the pipe that exited
 update() {
     # get contexts from file
     while read context; do
-    	echo "editor/${context}";
+      context=`echo "${context}" | cut -f 1 -d ":"`
+      echo "editor/${context}";
    	"${GIT}" -C "editor/${context}" pull
     done < curriculum-contexts.txt
 }
