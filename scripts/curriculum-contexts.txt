@@ -4,7 +4,7 @@ curriculum-examenprogramma:Examenprogramma
 curriculum-syllabus:Syllabus
 curriculum-examenprogramma-bg:Examenprogramma Beroepsgericht
 curriculum-referentiekader:Referentiekader
-curriculum-erk:Europoees Referentie Kader
+curriculum-erk:Europees Referentie Kader
 curriculum-leerdoelenkaarten:Leerdoelenkaarten
 curriculum-inhoudslijnen:Inhoudslijnen
 curriculum-basis:Basis
