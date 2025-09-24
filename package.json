@@ -6,10 +6,10 @@
 		"lint": "eslint \"src/*\""
 	},
 	"dependencies": {
-		"@muze-nl/jaqt": "^0.10.1",
+		"@muze-nl/jaqt": "^0.9.8",
 		"@muze-nl/jsontag": "^0.9.11",
-		"@muze-nl/od-jsontag": "^0.3.3",
-		"@muze-nl/simplystore": "^0.7.2",
+		"@muze-nl/od-jsontag": "^0.3.4",
+		"@muze-nl/simplystore": "0.7.3",
 		"array-apply-partial-diff": "^0.1.0"
 	},
 	"devDependencies": {
