@@ -1,9 +1,10 @@
-import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
+import {from,anyOf,source} from '@muze-nl/jaqt'
 import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
 import JSONTag from '@muze-nl/jsontag'
 import applyValues from 'array-apply-partial-diff'
 import {importEntity} from './import.merge.mjs'
 import { appendFileSync } from 'fs'
+import process from 'node:process'
 
 function log(message) {
     appendFileSync(process.cwd()+'/data/import-log.txt', message+"\n")
@@ -47,14 +48,9 @@ export default {
             return updatedEntities
         }
         let errors = []
-        let localIds = new Map()
 
         function missingEntries(a, b) {
             return a.filter(x => !b.includes(x))
-        }
-
-        function addedEntries(a, b) {
-            return b.filter(x => !a.includes(x))
         }
 
         function resolveLinks(arr) {

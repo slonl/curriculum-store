@@ -6,15 +6,16 @@
 		"lint": "eslint \"src/*\""
 	},
 	"dependencies": {
-		"@muze-nl/jaqt": "^0.9.8",
+		"@muze-nl/jaqt": "^0.10.1",
 		"@muze-nl/jsontag": "^0.9.11",
 		"@muze-nl/od-jsontag": "^0.3.3",
-		"@muze-nl/simplystore": "^0.7.1",
-		"array-apply-partial-diff": "^0.1.0",
-		"curriculum-js": "^0.4.0"
+		"@muze-nl/simplystore": "^0.7.2",
+		"array-apply-partial-diff": "^0.1.0"
 	},
 	"devDependencies": {
-		"eslint": "^8.57.0",
+		"@eslint/js": "^9.36.0",
+		"eslint": "^9.36.0",
+		"globals": "^16.4.0",
 		"tap": "^21.0.1"
 	}
 }

@@ -1,9 +1,9 @@
 import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
-import {getIndex} from '@muze-nl/od-jsontag/src/symbols.mjs'
 import JSONTag from '@muze-nl/jsontag'
-import {_,from,not,anyOf,allOf,asc,desc,sum,count,avg,max,min} from '@muze-nl/jaqt'
+import {from,anyOf} from '@muze-nl/jaqt'
 import applyValues from 'array-apply-partial-diff'
 import { appendFileSync } from 'fs'
+import process from 'node:process'
 
 // TODO: frontend already checks for inconsistent properties - should this code do that as well?
 
@@ -675,14 +675,6 @@ export function addEntity(entity, dataspace, meta)
     function fromIndex(id)
     {
         return meta.index.id.get('/uuid/'+id)?.deref()
-    }
-
-    /**
-     * returns true if an entity with that uuid is in the dataspace
-     */
-    function hasIndex(id)
-    {
-        return meta.index.id.has('/uuid/'+id)
     }
 
 	const current = fromIndex(entity.id)
