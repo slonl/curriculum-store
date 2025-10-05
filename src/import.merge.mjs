@@ -1,4 +1,3 @@
-import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
 import JSONTag from '@muze-nl/jsontag'
 import {from,anyOf} from '@muze-nl/jaqt'
 import applyValues from 'array-apply-partial-diff'
@@ -12,10 +11,10 @@ function log(message) {
 }
 
 function getType(e) {
-	let type = odJSONTag.getAttribute(e, 'class')
+	let type = JSONTag.getAttribute(e, 'class')
 	if (!type) {
     	type = e['@type']
-    	odJSONTag.setAttribute(e, 'class', type)
+    	JSONTag.setAttribute(e, 'class', type)
     }
     return type
 }
@@ -395,7 +394,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 
 	function updateNiveauIndex(entity)
 	{
-		const type = odJSONTag.getAttribute(entity, 'class')
+		const type = JSONTag.getAttribute(entity, 'class')
 		if (!meta.schema.types[type]) {
 			throw new Error('Unknown type '+type)
 		}
@@ -612,7 +611,7 @@ export function updateRoot(child)
     }
     let updated = false
     let roots = child.root.slice()
-    let childType = odJSONTag.getAttribute(child, 'class')
+    let childType = JSONTag.getAttribute(child, 'class')
     if (!childType) {
         throw new Error('No child type found', {details: child})
     }
@@ -656,7 +655,7 @@ export function findChild(root, child, type) {
 }
 
 export function removeParent(child, parent) {
-	const parentType = odJSONTag.getAttribute(parent, 'class')
+	const parentType = JSONTag.getAttribute(parent, 'class')
     child[parentType] = child[parentType].filter(e => e.id!=parent.id)
     if (child[parentType].length==0) {
         delete child[parentType]
@@ -690,12 +689,12 @@ export function addEntity(entity, dataspace, meta)
     dataspace[type].push(entity)
     entity = dataspace[type][dataspace[type].length-1]
     try {
-        odJSONTag.setAttribute(entity, 'class', type)
+        JSONTag.setAttribute(entity, 'class', type)
     } catch(e) {
         throw new Error(e.message+' class '+JSON.stringify(type)+' '+entity.id)
     }
     try {
-        odJSONTag.setAttribute(entity, 'id', '/uuid/'+entity.id)
+        JSONTag.setAttribute(entity, 'id', '/uuid/'+entity.id)
     } catch(e) {
         throw new Error(e.message+' id '+JSON.stringify(entity))
     }

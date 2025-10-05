@@ -1,5 +1,4 @@
 import {from,anyOf,source} from '@muze-nl/jaqt'
-import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
 import JSONTag from '@muze-nl/jsontag'
 import applyValues from 'array-apply-partial-diff'
 import {importEntity} from './import.merge.mjs'
@@ -55,7 +54,7 @@ export default {
 
         function resolveLinks(arr) {
             arr.forEach((v,i,a) => {
-                if (odJSONTag.getType(v)=='link') {
+                if (JSONTag.getType(v)=='link') {
                     if (meta.index.id.has(''+v)) {
                         a[i] = meta.index.id.get(''+v).deref()
                     } else {
@@ -123,12 +122,12 @@ export default {
                 }
             }
             try {
-                odJSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
+                JSONTag.setAttribute(child, 'id', '/uuid/'+child.id)
             } catch(e) {
                 throw new Error(e.message+' id '+JSON.stringify(child))
             }
             try {
-                odJSONTag.setAttribute(child, 'class', type)
+                JSONTag.setAttribute(child, 'class', type)
             } catch(e) {
                 throw new Error(e.message+' class '+JSON.stringify(type)+' '+child.id)
             }
@@ -199,7 +198,7 @@ export default {
                 }
             }
             child.unreleased = true
-            let parentType = odJSONTag.getAttribute(parent, 'class')
+            let parentType = JSONTag.getAttribute(parent, 'class')
             if (!parentType) {
                 throw new Error('No parent type found for '+parent.id,{ details: [parent, parent[source]] })
             }
@@ -346,7 +345,7 @@ export default {
                                 throw new Error('child has no root '+JSON.stringify(child))
                             }
                             let roots = child.root.slice()
-                            let childType = odJSONTag.getAttribute(child, 'class')
+                            let childType = JSONTag.getAttribute(child, 'class')
                             if (!childType) {
                                 throw new Error('No child type found', {details: child})
                             }
@@ -361,7 +360,7 @@ export default {
                             }
 
                             // change {parent}, remove entity from tobeRemoved[entity[type]]
-                            let entityType = odJSONTag.getAttribute(entity, 'class')
+                            let entityType = JSONTag.getAttribute(entity, 'class')
                             child[entityType] = child[entityType].filter(e => e.id!=entity.id)
                             if (child[entityType].length==0) {
                                 delete child[entityType]
