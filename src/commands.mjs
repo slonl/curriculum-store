@@ -1,4 +1,4 @@
-import {from,anyOf,source} from '@muze-nl/jaqt'
+import {from,anyOf} from '@muze-nl/jaqt'
 import JSONTag from '@muze-nl/jsontag'
 import applyValues from 'array-apply-partial-diff'
 import {importEntity} from './import.merge.mjs'
@@ -200,7 +200,7 @@ export default {
             child.unreleased = true
             let parentType = JSONTag.getAttribute(parent, 'class')
             if (!parentType) {
-                throw new Error('No parent type found for '+parent.id,{ details: [parent, parent[source]] })
+                throw new Error('No parent type found for '+parent.id,{ details: [parent] })
             }
             Object.defineProperty(child, parentType, {
                 configurable: true,
