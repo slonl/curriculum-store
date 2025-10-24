@@ -97,7 +97,16 @@
                                     "id":<link>"/schema/properties/id/",
                                     "prefix":<link>"/schema/properties/prefix/",
                                     "ce_se":<object id="/schema/properties/ce_se/">{
-                                        "type":"string"
+                                        "type":[
+                                            "string",
+                                            "null"
+                                        ],
+                                        "enum":[
+                                            "CE",
+                                            "SE",
+                                            "CE;SE",
+                                            ""
+                                        ]
                                     },
                                     "kern_keuze":<object id="/schema/properties/kern_keuze/">{
                                         "type":[
@@ -280,7 +289,8 @@
                                                 "enum":[
                                                     "kerndoel",
                                                     "eindterm"
-                                                ]
+                                                ],
+                                                "required":true
                                             },
                                             "ce":<link>"/schema/properties/ce/",
                                             "se":<link>"/schema/properties/se/",
@@ -508,30 +518,18 @@
                                                             "unreleased":<link>"/schema/properties/unreleased/"
                                                         },
                                                         "children":{
-                                                            "Tag":<object id="5e87a369-4279-48a7-bc0b-58a00931f929">{
-                                                                "label":"tag",
-                                                                "properties":{
-                                                                    
-                                                                },
-                                                                "children":{
-                                                                    
-                                                                }
-                                                            }
+                                                            
                                                         }
-                                                    },
-                                                    "Tag":<link>"5e87a369-4279-48a7-bc0b-58a00931f929"
+                                                    }
                                                 }
                                             },
-                                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-                                            "Tag":<link>"5e87a369-4279-48a7-bc0b-58a00931f929"
+                                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
                                         }
                                     },
-                                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-                                    "Tag":<link>"5e87a369-4279-48a7-bc0b-58a00931f929"
+                                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
                                 }
                             },
-                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-                            "Tag":<link>"5e87a369-4279-48a7-bc0b-58a00931f929"
+                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
                         }
                     }
                 },
@@ -1258,32 +1256,38 @@
         "FoDoelzin":<link>"/schema/types/FoDoelzin/",
         "FoUitwerking":<link>"/schema/types/FoUitwerking/",
         "FoIllustratie":<link>"/schema/types/FoIllustratie/",
-        "LdkVakleergebied":<link>"/schema/types/LdkVakleergebied/",
-        "LdkVakkern":<link>"/schema/types/LdkVakkern/",
-        "Doelniveau":<link>"/schema/types/Doelniveau/",
-        "LdkVaksubkern":<link>"/schema/types/LdkVaksubkern/",
-        "LdkVakinhoud":<link>"/schema/types/LdkVakinhoud/",
-        "LdkVakbegrip":<link>"/schema/types/LdkVakbegrip/",
-        "Kerndoel":<link>"/schema/types/Kerndoel/",
-        "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
-        "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
-        "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/",
-        "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-        "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
-        "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-        "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
+        "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
+        "Syllabus":<link>"/schema/types/Syllabus/",
         "Examenprogramma":<link>"/schema/types/Examenprogramma/",
+        "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
+        "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
+        "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/",
+        "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+        "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+        "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
+        "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
         "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
         "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
         "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
-        "Tag":<link>"5e87a369-4279-48a7-bc0b-58a00931f929",
         "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
         "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
+        "ErkVakleergebied":<link>"/schema/types/ErkVakleergebied/",
+        "Doelniveau":<link>"/schema/types/Doelniveau/",
+        "ErkTaalprofiel":<link>"/schema/types/ErkTaalprofiel/",
+        "ErkTaalprofieltekst":<link>"/schema/types/ErkTaalprofieltekst/",
+        "ErkSchaal":<link>"/schema/types/ErkSchaal/",
+        "ErkGebied":<link>"/schema/types/ErkGebied/",
+        "ErkCategorie":<link>"/schema/types/ErkCategorie/",
+        "ErkTaalactiviteit":<link>"/schema/types/ErkTaalactiviteit/",
+        "ErkCandobeschrijving":<link>"/schema/types/ErkCandobeschrijving/",
+        "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
+        "ErkLesidee":<link>"/schema/types/ErkLesidee/",
         "InhVakleergebied":<link>"/schema/types/InhVakleergebied/",
         "InhInhoudslijn":<link>"/schema/types/InhInhoudslijn/",
         "InhCluster":<link>"/schema/types/InhCluster/",
         "InhSubcluster":<link>"/schema/types/InhSubcluster/",
         "Doel":<link>"/schema/types/Doel/",
+        "Kerndoel":<link>"/schema/types/Kerndoel/",
         "RefVakleergebied":<link>"/schema/types/RefVakleergebied/",
         "RefDomein":<link>"/schema/types/RefDomein/",
         "RefSubdomein":<link>"/schema/types/RefSubdomein/",
@@ -1299,21 +1303,14 @@
         "ExamenprogrammaBgModule":<link>"/schema/types/ExamenprogrammaBgModule/",
         "ExamenprogrammaBgKern":<link>"/schema/types/ExamenprogrammaBgKern/",
         "ExamenprogrammaBgProfiel":<link>"/schema/types/ExamenprogrammaBgProfiel/",
-        "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
-        "Syllabus":<link>"/schema/types/Syllabus/",
-        "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
-        "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
-        "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/",
-        "ErkVakleergebied":<link>"/schema/types/ErkVakleergebied/",
-        "ErkTaalprofiel":<link>"/schema/types/ErkTaalprofiel/",
-        "ErkTaalprofieltekst":<link>"/schema/types/ErkTaalprofieltekst/",
-        "ErkSchaal":<link>"/schema/types/ErkSchaal/",
-        "ErkGebied":<link>"/schema/types/ErkGebied/",
-        "ErkCategorie":<link>"/schema/types/ErkCategorie/",
-        "ErkTaalactiviteit":<link>"/schema/types/ErkTaalactiviteit/",
-        "ErkCandobeschrijving":<link>"/schema/types/ErkCandobeschrijving/",
-        "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
-        "ErkLesidee":<link>"/schema/types/ErkLesidee/"
+        "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
+        "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
+        "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/",
+        "LdkVakleergebied":<link>"/schema/types/LdkVakleergebied/",
+        "LdkVakkern":<link>"/schema/types/LdkVakkern/",
+        "LdkVaksubkern":<link>"/schema/types/LdkVaksubkern/",
+        "LdkVakinhoud":<link>"/schema/types/LdkVakinhoud/",
+        "LdkVakbegrip":<link>"/schema/types/LdkVakbegrip/"
     },
     "properties":{
         "title":<link>"/schema/properties/title/",
@@ -1328,21 +1325,21 @@
         "soort":<link>"/schema/properties/soort/",
         "ce":<link>"/schema/properties/ce/",
         "se":<link>"/schema/properties/se/",
-        "ce_se":<link>"/schema/properties/ce_se/",
-        "kerndoelLabel":<link>"/schema/properties/kerndoelLabel/",
-        "kern":<link>"/schema/properties/kern/",
-        "keuze":<link>"/schema/properties/keuze/",
         "ingangsdatum":<link>"/schema/properties/ingangsdatum/",
+        "examenjaar":<link>"/schema/properties/examenjaar/",
         "url":<link>"/schema/properties/url/",
         "versie":<link>"/schema/properties/versie/",
+        "jaargang":<link>"/schema/properties/jaargang/",
+        "kern":<link>"/schema/properties/kern/",
+        "keuze":<link>"/schema/properties/keuze/",
+        "category":<link>"/schema/properties/category/",
+        "algemeen":<link>"/schema/properties/algemeen/",
+        "isempty":<link>"/schema/properties/isempty/",
+        "ce_se":<link>"/schema/properties/ce_se/",
         "kern_keuze":<link>"/schema/properties/kern_keuze/",
         "bron":<link>"/schema/properties/bron/",
         "aanbodid":<link>"/schema/properties/aanbodid/",
         "type":<link>"/schema/properties/type/",
-        "examenjaar":<link>"/schema/properties/examenjaar/",
-        "jaargang":<link>"/schema/properties/jaargang/",
-        "category":<link>"/schema/properties/category/",
-        "algemeen":<link>"/schema/properties/algemeen/",
-        "isempty":<link>"/schema/properties/isempty/"
+        "kerndoelLabel":<link>"/schema/properties/kerndoelLabel/"
     }
 }
