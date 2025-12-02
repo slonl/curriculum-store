@@ -13,8 +13,8 @@ let inputFile = process.argv[3]
 let outputFile = process.argv[4]
 
 // load file
-let schema = fs.readFileSync(schemaFile, 'utf-8')
-let input = fs.readFileSync(inputFile, 'utf-8')
+let schema = fs.readFileSync(schemaFile, 'utf8')
+let input = fs.readFileSync(inputFile, 'utf8')
 
 // parse jsontag
 let meta = {}
