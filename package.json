@@ -7,9 +7,9 @@
 	},
 	"dependencies": {
 		"@muze-nl/jaqt": "^0.10.2",
-		"@muze-nl/jsontag": "^0.10.2",
-		"@muze-nl/od-jsontag": "^0.4.2",
-		"@muze-nl/simplystore": "^0.9.1",
+		"@muze-nl/jsontag": "^0.10.4",
+		"@muze-nl/od-jsontag": "^0.4.5",
+		"@muze-nl/simplystore": "^0.9.3",
 		"array-apply-partial-diff": "^0.1.0"
 	},
 	"devDependencies": {
