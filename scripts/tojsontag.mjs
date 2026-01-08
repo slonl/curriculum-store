@@ -123,10 +123,12 @@ const linkIds = ob => {
         }
     })
     if (ob.replacedBy) {
-        ob.replacedBy = ob.replacedBy.map(id => curriculum.index.id[id] || id)
+//        ob.replacedBy = ob.replacedBy.map(id => curriculum.index.id[id] || id)
+        ob.replacedBy = ob.replacedBy.map(id => 'https://opendata.slo.nl/curriculum/uuid/'+id)
     }
     if (ob.replaces) {
-        ob.replaces = ob.replaces.map(id => curriculum.index.id[id] || id)
+//        ob.replaces = ob.replaces.map(id => curriculum.index.id[id] || id)
+        ob.replaces = ob.replaces.map(id => 'https://opendata.slo.nl/curriculum/uuid/'+id)
     }
 }
 
