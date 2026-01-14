@@ -59,6 +59,9 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 	    	}
 	        Object.keys(e).forEach(property => {
 	            if (isTemporaryProperty(property)) {
+	            	if (property=='$mark' && e[property]=='deleted') {
+	            		return // leave $mark='deleted' in, will be removed by merge
+	            	}
 	            	delete e[property]
 	            } else if (isLiteralProperty(property)) {
 	                if (property==='uuid') {
@@ -197,8 +200,10 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 					case '-':
 						// handle '-' as delete this property
 						// TODO: check that property is not required
-						delete storedEntity[property]
-						changed = true
+						if (typeof storedEntity[property] !== 'undefined') {
+							delete storedEntity[property]
+							changed = true
+						}
 					break
 					case '':
 						// handle '' as keep this property
@@ -250,7 +255,7 @@ export function importEntity(importedEntity, importedRoot, dataspace, meta)
 		        // in case this is the first new child of this type
 		        currentValue = []
 		    }
-		    if (!newValue || !Array.isArray(newValue)) {
+		    if (!Array.isArray(newValue)) {
 		    	throw new Error('Expected property '+property+' to be an array', {cause: newValue})
 		    }
 		    let changed = false
@@ -591,12 +596,26 @@ export function flatten(arr) {
     return Array.from(result)
 }
 
-export function missingEntries(a, b) {
-    return a?.map(e => e.id).filter(x => !b?.map(e => e.id).includes(x))
+export function missingEntries(currentValue, newValue) {
+    return currentValue
+    	?.map(e => e.id)
+    	.filter(
+    		x => !newValue
+    		?.filter(e => e.$mark!='deleted') // remove links marked as deleted by import
+    		.map(e => e.id) // return only the id
+    		.includes(x) // return true if the id in currentValue (x) is still in newValue
+    	)
 }
 
-export function addedEntries(a, b) {
-    return b?.map(e => e.id).filter(x => !a?.map(e => e.id).includes(x))
+export function addedEntries(currentValue, newValue) {
+    return newValue
+    	?.filter(e => e.$mark!='deleted')
+    	.map(e => e.id)
+    	.filter(
+    		x => !currentValue
+    		?.map(e => e.id)
+    		.includes(x)
+    	)
 }
 
 export function orderChanges(a, b) {
