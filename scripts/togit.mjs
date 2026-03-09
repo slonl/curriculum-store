@@ -2,8 +2,7 @@ import Curriculum from 'curriculum-js'
 // load node filesystem support
 import fs from 'fs'
 import JSONTag from '@muze-nl/jsontag'
-import parse from '@muze-nl/od-jsontag/src/parse.mjs'
-import * as odJSONTag from '@muze-nl/od-jsontag/src/jsontag.mjs'
+import Parser from '@muze-nl/od-jsontag/src/parse.mjs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -14,57 +13,45 @@ const config = {
 	branchName: 'editor-test',
 	authToken: process.env.AUTH_TOKEN
 }
+if (!config.authToken) {
+	console.error('Need AUTH_TOKEN env variable for github access.')
+	process.exit()
+} else {
+	console.log('committing to '+config.owner+'/'+config.brancheName)
+}
+
 const meta = {
 	index: {
 		id: new Map()
 	}
 }
 
-function getUUID(url) {
-	const u = new URL(url, 'https://localhost/')
-	return u.pathname.split('/') // split path into filenames
-		.filter(Boolean) // remove empty filenames, e.g. if url ends with '/' 
-		.pop() // return last element
-}
-
 function convertToCamelCase(str) {
     return str
         .toLowerCase()
+        .replace(/_id/g, '')
         .replace(/_./g, match => match.charAt(1).toUpperCase())
         .replace(/^./g, match => match.charAt(0).toUpperCase());
 }
 
 function toJSON(ob) {
-/*
-	const type = odJSONTag.getAttribute(ob, 'class')
-	if (!type) {
-		console.log('no type',ob)
-		process.exit()	
-	}
-	let result = {
-		id: getUUID(odJSONTag.getAttribute(ob, 'id'))
-	}
-	const props = ['deleted','dirty']
-	props.concat(Object.keys(meta.schema.types[type].properties))
-	.forEach(property => {
-		if (typeof ob[property] != 'undefined') {
-			result[property] = ob[property]
-		}
-	})
-//	console.log(meta.schema.types[type])
-	Object.entries(meta.schema.types[type].children).forEach(([childType, childDef]) => {
-		const snakeCaseType = childDef.label + '_id'
-		if (ob[childType] && ob[childType].length) {
-			result[snakeCaseType] = ob[childType].map(child => {
-				return getUUID(odJSONTag.getAttribute(child, 'id'))
-			})
-		}
-	})
-	//FIXME: also handle replaced/replacedBy
-	//and properties of type object
-	//FIXME: keep the order of the original objects properties intact
-*/
 	let result = {}	
+	// property order in ob can differ from existing order in
+	// git source, since ob is result of transformations for simplystore
+	// so look up the original ob using its id in the git source
+	// use the property order there
+	// add any missing properties at the end
+	let original = curriculum.index.id(ob.id)
+	if (!original) {
+		original = ob
+	}
+	for (let prop of Object.getOwnPropertyNames(original)) {
+		const camelCaseKey = convertToCamelCase(prop)
+		if (typeof ob[camelCaseKey] !== 'undefined' && isValidProp(ob, camelCaseKey)) {
+			let {key, value} = convertProp(ob, camelCaseKey)
+			result[key] = value
+		}
+	}
 	for (let prop of Object.getOwnPropertyNames(ob)) {
 		if (isValidProp(ob, prop)) {
 			let {key, value} = convertProp(ob, prop)
@@ -81,7 +68,7 @@ function toJSON(ob) {
 }
 
 function isValidProp(ob, prop) {
-	const type = odJSONTag.getAttribute(ob, 'class')
+	const type = JSONTag.getAttribute(ob, 'class')
 	let props = meta.schema.types[type]?.properties
 	if (!props) {
 		throw new Error('entity has no properties in schema', type, ob)
@@ -101,7 +88,7 @@ function isValidProp(ob, prop) {
 }
 
 function convertProp(ob, prop) {
-	const type = odJSONTag.getAttribute(ob, 'class')
+	const type = JSONTag.getAttribute(ob, 'class')
 	let props = meta.schema.types[type]?.properties
 	let def = {
 		key: prop,
@@ -182,9 +169,10 @@ function loadSchema(schemafile) {
 }
 
 async function commitChanges(datafile, commands) {	
-	let count = 0
 	const extension = datafile.split('.').pop()
 	const basefile = datafile.substring(0, datafile.length - (extension.length + 1)) //+1 for . character
+	const parser = new Parser()
+	parser.meta = tempMeta  // tempMeta is needed to combine the resultArray, using meta conflicts with meta.index.id
 	let jsontag
 	let commits = {}
 	let tempMeta = {}
@@ -198,7 +186,7 @@ async function commitChanges(datafile, commands) {
 		console.log('reading jsontag',datafile)
 		if (fs.existsSync(datafile)) {
 			jsontag = fs.readFileSync(datafile, 'utf-8')
-			dataspace = parse(jsontag, tempMeta) // tempMeta is needed to combine the resultArray, using meta conflicts with meta.index.id
+			dataspace = parser.parse(jsontag)
 			updateContexts()
 			// write data back to git repositories
 			if (command && !commits[command.id]) {
@@ -233,7 +221,6 @@ async function commitChanges(datafile, commands) {
 				}
 				commits[command.id] = true
 				fs.writeFileSync(__dirname+'/data/committed.json', JSON.stringify(commits))
-				count++
 			}
 
 			for (let context of Object.values(meta.schema.contexts)) {
