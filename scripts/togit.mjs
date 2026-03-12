@@ -10,7 +10,7 @@ const __dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 
 const config = {
 	owner: 'slonl',
-	branchName: 'editor-test',
+	branchName: 'editor-dev',
 	authToken: process.env.AUTH_TOKEN
 }
 if (!config.authToken) {
@@ -41,7 +41,7 @@ function toJSON(ob) {
 	// so look up the original ob using its id in the git source
 	// use the property order there
 	// add any missing properties at the end
-	let original = curriculum.index.id(ob.id)
+	let original = curriculum.index.id[ob.id]
 	if (!original) {
 		original = ob
 	}
@@ -172,10 +172,10 @@ async function commitChanges(datafile, commands) {
 	const extension = datafile.split('.').pop()
 	const basefile = datafile.substring(0, datafile.length - (extension.length + 1)) //+1 for . character
 	const parser = new Parser()
-	parser.meta = tempMeta  // tempMeta is needed to combine the resultArray, using meta conflicts with meta.index.id
+	let tempMeta = {}
 	let jsontag
 	let commits = {}
-	let tempMeta = {}
+	parser.meta = tempMeta  // tempMeta is needed to combine the resultArray, using meta conflicts with meta.index.id
 	if (fs.existsSync(__dirname+'/data/committed.json')) {
 		commits = fs.readFileSync(__dirname+'/data/committed.json')
 		commits = JSON.parse(commits)
