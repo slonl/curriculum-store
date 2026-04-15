@@ -2,6 +2,7 @@ import {from,anyOf} from '@muze-nl/jaqt'
 import JSONTag from '@muze-nl/jsontag'
 import applyValues from 'array-apply-partial-diff'
 import {importEntity} from './import.merge.mjs'
+import {updateNiveauIndex} from './updateNiveauIndex.mjs'
 import { appendFileSync } from 'fs'
 import process from 'node:process'
 
