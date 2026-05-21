@@ -35,6 +35,13 @@ export function getChildren(entity, meta) {
 	return Array.from(result)
 }
 
+/**
+ * This function requires that the data is a DAG, so doen't contain cycles
+ * Dive will walk over the graph, from entity up through all its parents calling callbackUp
+ * untill there either are no more parents, or all parents have returned
+ * a truthy result
+ * Then it walks back along the same path and runs callbackDown
+ */
 export function dive(entity, callbackUp=null, callbackDown=null) {
 	let found = []
 	if (callbackUp) {
