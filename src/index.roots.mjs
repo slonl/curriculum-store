@@ -10,18 +10,14 @@ export function createRootIndex(data, meta) {
 
 export function updateRootIndex(data, meta, changes) {
 	for (const entity of changes) {
-		updateRoots(entity)
+		if (entity[previous]) {
+			updateChildRoots(entity)
+		} else {
+			updateRoots(entity)
+		}
 	}
 }
 
-
-/**
- * makes sure that the root property of this entity is correct
- * removes any roots that are no longer listed in its parents
- * adds any roots that are now available in its parents
- * so this must recurse from the child to the root
- * or at least untill all parents have up-to-date roots
- */
 function updateRoots(entity) {
     if (!entity || !entity.id) {
         return
@@ -42,4 +38,21 @@ function updateRoots(entity) {
 	    }
        	e.root = Array.from(roots)
     })
+}
+
+function updateChildRoots(entity) {
+	const currChildren = getChildren(entity)
+	const prevChildren = getChildren(entity[previous])
+	prevChildren.forEach(child => {
+		if (!currChildren.has(child)) {
+			updateRoots(child)
+			//FIXME: and do this for all descendants....
+			// which is killing for performance, since each descendant would need to fetch all possible roots again
+			// so - step 1: figure out if this child.root has changed (is a root no removed)
+			// if so - find all current descendants from this root (walk from root over all children)
+			// then find all descendant of this child
+			// if there are descendants of this child that are not in the descendants of root, make sure that
+			// their root entry is uptodate (descendant.root.remove(root))
+		}
+	})
 }

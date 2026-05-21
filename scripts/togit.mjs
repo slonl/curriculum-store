@@ -47,13 +47,16 @@ function toJSON(ob) {
 	}
 	for (let prop of Object.getOwnPropertyNames(original)) {
 		const camelCaseKey = convertToCamelCase(prop)
-		if (typeof ob[camelCaseKey] !== 'undefined' && isValidProp(ob, camelCaseKey)) {
+		if (typeof ob[camelCaseKey] !== 'undefined'
+			&& ob[camelCaseKey] !== null
+			&& isValidProp(ob, camelCaseKey)
+		) {
 			let {key, value} = convertProp(ob, camelCaseKey)
 			result[key] = value
 		}
 	}
 	for (let prop of Object.getOwnPropertyNames(ob)) {
-		if (isValidProp(ob, prop)) {
+		if (ob[prop]!==null && isValidProp(ob, prop)) {
 			let {key, value} = convertProp(ob, prop)
 			result[key] = value
 		}
@@ -206,7 +209,8 @@ async function commitChanges(datafile, commands) {
 							if (isChanged(propCamel, fileData)) {
 								console.log('writing',fileName)
 								try {
-									await curriculum.sources[schemaName].writeFile(fileName, fileData, command.message, command.author)
+									// await curriculum.sources[schemaName].writeFile(fileName, fileData, command.message, command.author)
+									fs.writeFileSync(__dirname+'/togit/curriculum-'+schemaName+'/'+fileName, fileData)
 								} catch(error) {
 									console.error(error)
 									process.exit()
@@ -283,6 +287,6 @@ async function main() {
 	const commands = loadCommandLog(status, __dirname+'/command-log.jsontag')
 	await commitChanges(__dirname+'/data/data.jsontag',commands)
 	console.log('done')
-}
+} 
 
 main()
