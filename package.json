@@ -4,7 +4,7 @@
 		"test": "tap test/*.mjs",
 		"start": "node src/curriculum-store.mjs",
 		"lint": "eslint \"src/*\"",
-		"curriculum": "cd scripts/; node tojsontag.mjs",
+		"import": "cd scripts/; node tojsontag.mjs",
 		"build": "node node_modules/@muze-nl/simplystore/scripts/convert.mjs data/curriculum.jsontag data/data.jsontag src/index.mjs data/schema.jsontag"
 	},
 	"dependencies": {
