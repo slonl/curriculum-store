@@ -3,6 +3,7 @@ import process from 'node:process'
 
 const datafile     = process.env.DATA_FILE || './data/data.jsontag'
 const schemaFile   = process.env.SCHEMA_FILE || './data/schema.jsontag'
+const indexFile    = process.env.INDEX_FILE || process.cwd()+'/src/index.mjs'
 const commandsFile = process.env.COMMANDS || process.cwd()+'/src/commands.mjs'
 const port         = process.env.NODE_PORT || 3000
 
@@ -17,6 +18,7 @@ async function checkServerAndStart(port) {
     simplystore.run({
       datafile,
       schemaFile,
+      indexFile,
       port,
       commandsFile,
     }) 
