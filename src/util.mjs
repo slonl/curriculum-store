@@ -1,6 +1,8 @@
-export function getParents(entity) {
+import JSONTag from '@muze-nl/jsontag'
+
+export function getParents(entity, meta) {
 	const parentTypes = Object.getOwnPropertyNames(entity)
-	.filter(prop => meta.types.includes(prop))
+	.filter(prop => meta.schema.types[prop])
 	.filter(prop => !Object.getOwnPropertyDescriptor(entity, prop).enumerable)
 
 	let result = new Set()	
@@ -17,13 +19,13 @@ export function getParents(entity) {
 }
 
 export function getChildren(entity, meta) {
-	const datatype = JSONTag.getAttribute('class', entity)
-	const childTypes = meta.types[datatype]?.children
+	const datatype = JSONTag.getAttribute(entity, 'class')
+	const childTypes = meta.schema.types[datatype]?.children
 	if (!childTypes) {
 		return []
 	}
 	let result = new Set()
-	for (const childType of childTypes) {
+	for (const childType in childTypes) {
 		if (Array.isArray(entity[childType])) {
 			for (const child of entity[childType]) {
 				result.add(child)
@@ -42,22 +44,33 @@ export function getChildren(entity, meta) {
  * a truthy result
  * Then it walks back along the same path and runs callbackDown
  */
-export function dive(entity, callbackUp=null, callbackDown=null) {
+export function dive(entity, meta, callbackUp=null, callbackDown=null) {
 	let found = []
 	if (callbackUp) {
-		for (const parent of getParents(entity)) {
+		for (const parent of getParents(entity, meta)) {
 			let result = callbackUp(parent)
 			if (!result) {
-				result = dive(parent, callbackUp, callbackDown)
+				result = dive(parent, meta, callbackUp, callbackDown)
 			}
 			if (result) {
 				found = found.concat(result)
 			}
 		}
 	}
-	found = new Set(found)
 	if (callbackDown) {
 		callbackDown(entity, found)
 	}
 	return found
+}
+
+export function flatten(arr) {
+    let result = new Set()
+    arr.forEach(v => {
+        if (Array.isArray(v)) {
+            flatten(v).forEach(v => result.add(v))
+        } else {
+            result.add(v)
+        }
+    })
+    return Array.from(result).filter(Boolean)
 }
