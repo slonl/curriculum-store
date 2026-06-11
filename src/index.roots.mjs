@@ -1,51 +1,60 @@
 import JSONTag from '@muze-nl/jsontag'
-import {dive} from './util.mjs'
+import {dive, getChildren} from './util.mjs'
+import {previous} from '@muze-nl/od-jsontag/src/symbols.mjs'
 
-export function createRootIndex(data, meta) {
-	Object.keys(meta.index.id).forEach(id => {
-		const entity = meta.index.id.get(id)?.deref()
-    	updateRoots(entity) //note: this is inefficient
-	}
-}
-
-export function updateRootIndex(data, meta, changes) {
-	for (const entity of changes) {
-		if (entity[previous]) {
-			updateChildRoots(entity)
-		} else {
-			updateRoots(entity)
+export default {
+	create(data, meta) {
+		console.log('creating root index')
+		meta.index.id.keys().forEach(id => {
+			const entity = meta.index.id.get(id)
+	    	createRoots(entity, meta) //note: this is inefficient
+		})
+	},
+	update(data, meta, changes) {
+		for (const entity of changes) {
+			if (entity[previous]) {
+				updateChildRoots(entity, meta)
+			} else {
+				createRoots(entity, meta)
+			}
 		}
 	}
 }
 
-function updateRoots(entity) {
+function createRoots(entity, meta) {
+//	console.log('root for ',entity.id)
     if (!entity || !entity.id) {
         return
     }
-    dive(entity, (e) => {
+    dive(entity, meta, (e) => {
     	// going up untill e is a root
     	const datatype = JSONTag.getAttribute(e, 'class')
-    	const root = meta.types[datatype]?.root
+    	const root = meta.schema.types[datatype]?.root
     	if (root) {
     		return [e]
     	}
     }, (e, roots) => {
+    	if (!roots?.length) {
+    		return
+    	}
 	    if (typeof e.root === 'undefined') {
 	        Object.defineProperty(e, 'root', {
 	            value: [],
-	            enumerable: false
+	            enumerable: false,
+	            writable: true
 	        })
 	    }
-       	e.root = Array.from(roots)
+       	e.root = Array.from(new Set(e.root.concat(roots)))
+//    	console.log('set root of '+e.id,e.root.length)
     })
 }
 
-function updateChildRoots(entity) {
-	const currChildren = getChildren(entity)
-	const prevChildren = getChildren(entity[previous])
+function updateChildRoots(entity, meta) {
+	const currChildren = getChildren(entity, meta)
+	const prevChildren = getChildren(entity[previous], meta)
 	prevChildren.forEach(child => {
 		if (!currChildren.has(child)) {
-			updateRoots(child)
+			updateRoots(child, meta)
 			//FIXME: and do this for all descendants....
 			// which is killing for performance, since each descendant would need to fetch all possible roots again
 			// so - step 1: figure out if this child.root has changed (is a root no removed)

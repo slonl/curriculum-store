@@ -1,34 +1,39 @@
 import JSONTag from '@muze-nl/jsontag'
-import getParents from './util.mjs'
-import { previous } from '@muze-nl/od-jsontag'
+import { getParents, getChildren, flatten } from './util.mjs'
+import { previous } from '@muze-nl/od-jsontag/src/symbols.mjs'
 
-export function createNiveauIndex(data, meta) {
-	meta.index.niveau = {}
-    for (let entityType in meta.schema.types) {
-        if (!meta.schema.types[entityType].root) {
-            continue
-        }
-        data[entityType].forEach(registerNiveauIndex)
-    }
-}
-
-export function updateNiveauIndex(data, meta, changes) {
-	for (const entity of changes) {
-		if (entity.Niveau) {
-			entity.NiveauIndex = Array.slice(entity.Niveau)
+export default {
+	create(data, meta) {
+		meta.index.niveau = {}
+	    for (let entityType in meta.schema.types) {
+	        if (!meta.schema.types[entityType].root) {
+	            continue
+	        }
+			console.log('creating niveau index for '+entityType)
+	        data[entityType].forEach(e => registerNiveauIndex(e, meta))
+	    }
+	},
+	update(data, meta, changes) {
+		for (const entity of changes) {
+			if (entity.Niveau) {
+				entity.NiveauIndex = Array.slice(entity.Niveau)
+			}
 		}
+		for (const entity of changes) {
+			if (entity.Niveau || entity[previous].Niveau) {
+				// check if we need to update any parent
+	            if (diff(entity.Niveau, entity[previous].Niveau)) {
+	    			updateParents(entity, meta)
+	            }
+			}
+	    }
 	}
-	for (const entity of changes) {
-		if (entity.Niveau || entity[previous].Niveau) {
-			// check if we need to update any parent
-            if (diff(entity.Niveau, entity[previous].Niveau)) {
-    			updateParents(entity)
-            }
-		}
-    }
 }
 
-function registerNiveauIndex(entity) {
+let indent = 0
+let spaces = ' '.repeat(100)
+
+function registerNiveauIndex(entity, meta) {
     const type = JSONTag.getAttribute(entity, 'class')
     if (!type) {
         return
@@ -45,32 +50,34 @@ function registerNiveauIndex(entity) {
                 return // is not a true parent in any case
             }
             if (entity[childType]) {
-                niveaus.push(entity[childType].map(child => registerNiveauIndex(child)))
+            	indent++
+                niveaus.push(entity[childType].map(child => registerNiveauIndex(child, meta)))
+                indent--
             }
         })
     }
-    niveaus = Array.from(new Set(flatten(niveaus).filter(Boolean))) // unique
     if (niveaus.length) {
-        if (typeof entity.NiveauIndex === 'undefined' || !entity.NiveauIndex) {
+	    niveaus = flatten(niveaus) // unique
+	    if (typeof entity.NiveauIndex === 'undefined' || !entity.NiveauIndex) {
             entity.NiveauIndex = niveaus
         }
     }
+//	console.log(spaces.substring(0,indent)+' register niveau',entity.id, niveaus.length)
     return niveaus
 }
 
-function updateParents(entity) {
-	const parents = getParents(entity)
-	const niveaus = entity.Niveau.map(e => e.id)
+function updateParents(entity, meta) {
+	const parents = getParents(entity, meta)
 	for (const parent of parents) {
 		if (parent.Niveau) {
 			parent.NiveauIndex = Array.slice(parent.Niveau)
 			continue
 		}
-		const children = getChildren(parent)
+		const children = getChildren(parent, meta)
 		const niveaus = getNiveaus(children)
 		if (!parent.NiveauIndex || diff(niveaus, parent.NiveauIndex)) {
 			parent.NiveauIndex = niveaus
-			updateParents(parent)
+			updateParents(parent, meta)
 		}
 	}
 }
@@ -88,5 +95,14 @@ function getNiveaus(children) {
 }
 
 function diff(a, b) {
-	// @TODO: return true if array/set a and b have different contents
+	const set1 = new Set(a);
+	const set2 = new Set(b);
+
+	if (set1.size !== set2.size) return true;
+
+	for (const str of set1) {
+		if (!set2.has(str)) return true;
+	}
+
+	return false;
 }
