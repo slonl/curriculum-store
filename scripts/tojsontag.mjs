@@ -4,6 +4,7 @@ import Curriculum from 'curriculum-js'
 import fs from 'fs'
 import repl from 'repl';
 import JSONTag from '@muze-nl/jsontag'
+//import niveauIndex from '../src/index.niveau.mjs'
 
 const curriculum = new Curriculum()
 let meta = {}
@@ -12,81 +13,6 @@ let storeSchema = {
     contexts: {},
     types: {},
     properties: {}
-}
-let niveauIndex = {}
-
-function flatten(arr) {
-    let result = new Set()
-    arr.forEach(v => {
-        if (Array.isArray(v)) {
-            flatten(v).forEach(v => result.add(v))
-        } else {
-            result.add(v)
-        }
-    })
-    return Array.from(result)
-}
-
-function addNiveauIndex(entity) {
-    let type = JSONTag.getAttribute(entity, 'class')
-    if (!type) {
-        return
-    }
-    let children = meta.schema.types[type].children
-    let niveaus = []
-    Object.keys(children).forEach(childType => {
-        if (childType=='Vakleergebied') {
-            return // is not a true parent in any case
-        }
-        if (entity[childType]) {
-            niveaus.push(entity[childType].map(child => addNiveauIndex(child)))
-        }
-    })
-    if (entity.NiveauIndex && entity.NiveauIndex.length) {
-        niveaus.push(entity.NiveauIndex)
-    }
-    if (entity.Niveau) {
-        // @FIXME: probably only set entity.Niveau in NiveauIndex
-        niveaus.push(entity.Niveau)
-    }
-    niveaus = flatten(niveaus).filter(Boolean)
-    if (niveaus.length) {
-        if (typeof entity.NiveauIndex === 'undefined') {
-            entity.NiveauIndex = [] //can't use non-enumerable here, since default JSONTag will ignore it
-        }
-        niveaus = niveaus.filter(n => entity.NiveauIndex.findIndex(ni => ni.id==n.id)===-1)
-        entity.NiveauIndex.splice(entity.NiveauIndex.length, 0, ...niveaus)
-        for (let n of entity.NiveauIndex) {
-            if (!niveauIndex[n.title]) {
-                niveauIndex[n.title] = {
-                    id: n.id,
-                    title: n.title
-                }
-            }
-            if (!niveauIndex[n.title][type]) {
-                niveauIndex[n.title][type] = new Set()
-            }
-            niveauIndex[n.title][type].add(entity)
-        }
-    }
-    return niveaus
-}
-
-const makeNiveauIndex = () => {
-    Object.entries(meta.schema.types).forEach(([typeName, typeData]) => {
-        if (!typeData.root) {
-            return
-        }
-        curriculum.data[typeName].forEach(addNiveauIndex)
-    })
-    for (let n in niveauIndex) {
-        for (let t in niveauIndex[n]) {
-            if (niveauIndex[n][t] instanceof Set) {
-                niveauIndex[n][t] = Array.from(niveauIndex[n][t])
-            }
-        }
-    }
-    curriculum.data.niveauIndex = niveauIndex
 }
 
 const snakeToCamel = str =>
@@ -252,7 +178,8 @@ async function main() {
     })
     .then(() => {
         meta.schema = storeSchema
-        makeNiveauIndex(curriculum.data)
+        meta.index = {}
+//        niveauIndex.create(curriculum.data, meta)
         // save as single jsontag blob
         let fileData = JSONTag.stringify(curriculum.data, null, 4)
         fs.writeFileSync('../data/curriculum.jsontag', fileData)
