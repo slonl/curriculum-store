@@ -11,7 +11,7 @@
 		"@muze-nl/jaqt": "^0.10.6",
 		"@muze-nl/jsontag": "^0.10.4",
 		"@muze-nl/od-jsontag": "^0.4.6",
-		"@muze-nl/simplystore": "^0.10.1",
+		"@muze-nl/simplystore": "^0.10.2",
 		"array-apply-partial-diff": "^0.1.0"
 	},
 	"devDependencies": {
