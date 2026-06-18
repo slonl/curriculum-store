@@ -4,7 +4,6 @@ import Curriculum from 'curriculum-js'
 import fs from 'fs'
 import repl from 'repl';
 import JSONTag from '@muze-nl/jsontag'
-//import niveauIndex from '../src/index.niveau.mjs'
 
 const curriculum = new Curriculum()
 let meta = {}
@@ -31,7 +30,16 @@ const linkIds = ob => {
         if (prop.substring(prop.length-3)=='_id') {
             let newname = capitalizeFirstLetter(prop.substring(0, prop.length-3))
             if (Array.isArray(ob[prop])) {
-                ob[newname] = ob[prop].map(id => curriculum.index.id[id])
+                ob[newname] = ob[prop].map(id => {
+                    let child = curriculum.index.id[id]
+                    if (!child) {
+                        console.error(JSONTag.getAttribute(ob, 'class'),ob.id, 'missing child',id,'in',newname,)
+                    } else if (child.id!==id) {
+                        console.error('incorrect id index',id,'indexed as',child.id)
+                        process.exit()
+                    }
+                    return child
+                }).filter(Boolean) // removes null entries
             } else {
                 ob[newname] = curriculum.index.id[ob[prop]]
             }
@@ -80,7 +88,11 @@ async function main() {
 
     // load all contexts from the editor/ and master/ folders
     let loadedSchemas = schemas.map(
-        schema => curriculum.loadContextFromFile(schema, './editor/'+schema+'/context.json')
+        async schema => {
+            let result
+            result = await curriculum.loadContextFromFile(schema, './editor/'+schema+'/context.json')
+            return result
+        }
     )
 
     // wait untill all contexts have been loaded, and return the promise values as schemas
