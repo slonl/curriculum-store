@@ -14,6 +14,7 @@ export default {
 		index.update(data, meta, changes)
 		parentIndex.update(data, meta, changes)
 		rootIndex.update(data, meta, changes)
+		niveauIndex.update(data, meta, changes)
 	},
 	load(meta, uuid=null) {
 		return index.load(meta, uuid)

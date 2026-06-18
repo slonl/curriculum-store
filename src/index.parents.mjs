@@ -9,7 +9,6 @@ export default {
 			const entity = meta.index.id.get(id)
 			updateEntity(entity, meta)
 		})
-		console.log('parent index done')
 	},
 	update(data, meta, changes) {
 		for (const entity of changes) {
@@ -37,6 +36,11 @@ function updateEntity(entity, meta) {
 	// now make sure all current children have a parent link back
 	indent++
 	currChildren.forEach(child => {
+		if (!child) {
+			console.error('broken children: ',entity.id)
+			console.log(currChildren)
+			process.exit()
+		}
 		linkParent(child, entity)
 	})
 	indent--
@@ -50,7 +54,11 @@ function unlinkParent(child, parent) {
 }
 
 function linkParent(child, parent) {
-	//console.log(spaces.substring(0,indent)+'linking parent '+parent.id+' to '+child.id)
+	// console.log(spaces.substring(0,indent)+'linking parent '+parent.id+' to '+child.id)
+	if (child.id==parent.id) {
+		console.error('refusing to link parent to itself',parent.id)
+		process.exit()
+	}
 	const datatype = JSONTag.getAttribute(parent, 'class')
 	defineParentProperty(child, datatype)
 	if (!child[datatype].includes(parent)) {
@@ -63,6 +71,7 @@ function defineParentProperty(entity, datatype) {
 		Object.defineProperty(entity, datatype, {
 			value: [],
 			enumerable: false,
+			configurable: true,
 			writable: true
 		})
 	}	
