@@ -50,6 +50,10 @@ export function dive(entity, meta, callbackUp=null, callbackDown=null) {
 		for (const parent of getParents(entity, meta)) {
 			let result = callbackUp(parent)
 			if (!result) {
+				if (parent.id==entity.id) {
+					console.error('entity',entity.id,'has itself as parent')
+					process.exit()
+				}
 				result = dive(parent, meta, callbackUp, callbackDown)
 			}
 			if (result) {
