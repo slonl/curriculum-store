@@ -1,10 +1,11 @@
-curriculum-fo:Curriculum Funderend Onderwijs
-curriculum-kerndoelen:Kerndoelen
-curriculum-examenprogramma:Examenprogramma
-curriculum-syllabus:Syllabus
+curriculum-fo:Geactualiseerde kerndoelen en examenprogramma's
+curriculum-leerlijn:Leerlijnen
 curriculum-examenprogramma-bg:Examenprogramma Beroepsgericht
 curriculum-referentiekader:Referentiekader
 curriculum-erk:Europees Referentie Kader
+curriculum-kerndoelen:Kerndoelen (2006)
+curriculum-examenprogramma:Examenprogramma (figerend)
+curriculum-syllabus:Syllabus (tot 2024)
 curriculum-leerdoelenkaarten:Leerdoelenkaarten
 curriculum-inhoudslijnen:Inhoudslijnen
 curriculum-basis:Basis

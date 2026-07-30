@@ -145,7 +145,7 @@ async function main() {
                 (['Examenprogramma','Vakleergebied','LdkVakleergebied','LdkVakbegrip','Syllabus',
                     'FoSet','RefVakleergebied','ErkGebied','ErkTaalprofiel','ErkVakleergebied',
                     'ExamenprogrammaBgProfiel','KerndoelVakleergebied','InhVakleergebied',
-                    'NhCategorie','Niveau','Doelniveau'].includes(cType))
+                    'NhCategorie','Niveau','Doelniveau','Leerlijn'].includes(cType))
                 {
                     storeSchema.types[cType].root = true
                 }

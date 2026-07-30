@@ -2,7 +2,7 @@
     "contexts":{
         "fo":<object id="/schema/contexts/fo/">{
             "label":"fo",
-            "title":"Curriculum Funderend Onderwijs",
+            "title":"Geactualiseerde kerndoelen en examenprogramma's",
             "FoSet":<object id="/schema/types/FoSet/">{
                 "label":"fo_set",
                 "properties":{
@@ -304,6 +304,15 @@
                                             "ce":<link>"/schema/properties/ce/",
                                             "se":<link>"/schema/properties/se/",
                                             "status":<link>"/schema/properties/status/",
+                                            "doeltype":<object id="/schema/properties/doeltype/">{
+                                                "type":"string",
+                                                "enum":[
+                                                    "aanbodsdoel",
+                                                    "ervaringsdoel",
+                                                    "beheersingsdoel",
+                                                    "hybride doel"
+                                                ]
+                                            },
                                             "id":<link>"/schema/properties/id/",
                                             "replacedBy":<link>"/schema/properties/replacedBy/",
                                             "replaces":<link>"/schema/properties/replaces/",
@@ -375,90 +384,12 @@
             "FoUitwerking":<link>"/schema/types/FoUitwerking/",
             "FoIllustratie":<link>"/schema/types/FoIllustratie/"
         },
-        "kerndoelen":<object id="/schema/contexts/kerndoelen/">{
-            "label":"kerndoelen",
-            "title":"Kerndoelen",
-            "Kerndoel":<link>"/schema/types/Kerndoel/",
-            "KerndoelVakleergebied":<object id="/schema/types/KerndoelVakleergebied/">{
-                "label":"kerndoel_vakleergebied",
+        "leerlijn":<object id="/schema/contexts/leerlijn/">{
+            "label":"leerlijn",
+            "title":"Leerlijnen",
+            "Leerlijn":<object id="/schema/types/Leerlijn/">{
+                "label":"leerlijn",
                 "properties":{
-                    "title":<link>"/schema/properties/title/",
-                    "description":<link>"/schema/properties/description/",
-                    "id":<link>"/schema/properties/id/",
-                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                    "replaces":<link>"/schema/properties/replaces/",
-                    "unreleased":<link>"/schema/properties/unreleased/"
-                },
-                "children":{
-                    "Kerndoel":<link>"/schema/types/Kerndoel/",
-                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
-                    "Niveau":<link>"/schema/types/Niveau/",
-                    "KerndoelDomein":<object id="/schema/types/KerndoelDomein/">{
-                        "label":"kerndoel_domein",
-                        "properties":{
-                            "title":<link>"/schema/properties/title/",
-                            "description":<link>"/schema/properties/description/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            "Kerndoel":<link>"/schema/types/Kerndoel/"
-                        }
-                    },
-                    "KerndoelUitstroomprofiel":<object id="/schema/types/KerndoelUitstroomprofiel/">{
-                        "label":"kerndoel_uitstroomprofiel",
-                        "properties":{
-                            "title":<link>"/schema/properties/title/",
-                            "description":<link>"/schema/properties/description/",
-                            "id":<link>"/schema/properties/id/",
-                            "replacedBy":<link>"/schema/properties/replacedBy/",
-                            "replaces":<link>"/schema/properties/replaces/",
-                            "unreleased":<link>"/schema/properties/unreleased/"
-                        },
-                        "children":{
-                            
-                        }
-                    }
-                },
-                "root":true
-            },
-            "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
-            "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/"
-        },
-        "examenprogramma":<object id="/schema/contexts/examenprogramma/">{
-            "label":"examenprogramma",
-            "title":"Examenprogramma",
-            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
-            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-            "ExamenprogrammaVakleergebied":<object id="/schema/types/ExamenprogrammaVakleergebied/">{
-                "label":"examenprogramma_vakleergebied",
-                "properties":{
-                    "title":<link>"/schema/properties/title/",
-                    "description":<link>"/schema/properties/description/",
-                    "id":<link>"/schema/properties/id/",
-                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                    "replaces":<link>"/schema/properties/replaces/",
-                    "unreleased":<link>"/schema/properties/unreleased/"
-                },
-                "children":{
-                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
-                }
-            },
-            "Examenprogramma":<object id="/schema/types/Examenprogramma/">{
-                "label":"examenprogramma",
-                "properties":{
-                    "ingangsdatum":<object id="/schema/properties/ingangsdatum/">{
-                        "type":"string"
-                    },
-                    "url":<object id="/schema/properties/url/">{
-                        "type":"string"
-                    },
-                    "versie":<object id="/schema/properties/versie/">{
-                        "type":"string"
-                    },
                     "prefix":<link>"/schema/properties/prefix/",
                     "title":<link>"/schema/properties/title/",
                     "description":<link>"/schema/properties/description/",
@@ -468,12 +399,10 @@
                     "unreleased":<link>"/schema/properties/unreleased/"
                 },
                 "children":{
-                    "Niveau":<link>"/schema/types/Niveau/",
-                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-                    "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
-                    "ExamenprogrammaKop1":<object id="/schema/types/ExamenprogrammaKop1/">{
-                        "label":"examenprogramma_kop1",
+                    "LeerlijnInhoudsblok":<object id="/schema/types/LeerlijnInhoudsblok/">{
+                        "label":"leerlijn_inhoudsblok",
                         "properties":{
+                            "prefix":<link>"/schema/properties/prefix/",
                             "title":<link>"/schema/properties/title/",
                             "description":<link>"/schema/properties/description/",
                             "id":<link>"/schema/properties/id/",
@@ -482,9 +411,10 @@
                             "unreleased":<link>"/schema/properties/unreleased/"
                         },
                         "children":{
-                            "ExamenprogrammaKop2":<object id="/schema/types/ExamenprogrammaKop2/">{
-                                "label":"examenprogramma_kop2",
+                            "LeerlijnSubinhoudsblok":<object id="/schema/types/LeerlijnSubinhoudsblok/">{
+                                "label":"leerlijn_subinhoudsblok",
                                 "properties":{
+                                    "prefix":<link>"/schema/properties/prefix/",
                                     "title":<link>"/schema/properties/title/",
                                     "description":<link>"/schema/properties/description/",
                                     "id":<link>"/schema/properties/id/",
@@ -493,9 +423,10 @@
                                     "unreleased":<link>"/schema/properties/unreleased/"
                                 },
                                 "children":{
-                                    "ExamenprogrammaKop3":<object id="/schema/types/ExamenprogrammaKop3/">{
-                                        "label":"examenprogramma_kop3",
+                                    "LeerlijnInhoudsrij":<object id="/schema/types/LeerlijnInhoudsrij/">{
+                                        "label":"leerlijn_inhoudsrij",
                                         "properties":{
+                                            "prefix":<link>"/schema/properties/prefix/",
                                             "title":<link>"/schema/properties/title/",
                                             "description":<link>"/schema/properties/description/",
                                             "id":<link>"/schema/properties/id/",
@@ -504,8 +435,8 @@
                                             "unreleased":<link>"/schema/properties/unreleased/"
                                         },
                                         "children":{
-                                            "ExamenprogrammaKop4":<object id="/schema/types/ExamenprogrammaKop4/">{
-                                                "label":"examenprogramma_kop4",
+                                            "LeerlijnInhoud":<object id="/schema/types/LeerlijnInhoud/">{
+                                                "label":"leerlijn_inhoud",
                                                 "properties":{
                                                     "title":<link>"/schema/properties/title/",
                                                     "description":<link>"/schema/properties/description/",
@@ -515,8 +446,9 @@
                                                     "unreleased":<link>"/schema/properties/unreleased/"
                                                 },
                                                 "children":{
-                                                    "ExamenprogrammaBody":<object id="/schema/types/ExamenprogrammaBody/">{
-                                                        "label":"examenprogramma_body",
+                                                    "Niveau":<link>"/schema/types/Niveau/",
+                                                    "LeerlijnVoorbeeld":<object id="/schema/types/LeerlijnVoorbeeld/">{
+                                                        "label":"leerlijn_voorbeeld",
                                                         "properties":{
                                                             "title":<link>"/schema/properties/title/",
                                                             "description":<link>"/schema/properties/description/",
@@ -526,133 +458,42 @@
                                                             "unreleased":<link>"/schema/properties/unreleased/"
                                                         },
                                                         "children":{
-                                                            
+                                                            "Niveau":<link>"/schema/types/Niveau/"
                                                         }
                                                     }
                                                 }
-                                            },
-                                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                                            }
                                         }
-                                    },
-                                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                                    }
                                 }
                             },
-                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                            "FoKernzin":<link>"/schema/types/FoKernzin/",
+                            "LeerlijnVoorbeeld":<link>"/schema/types/LeerlijnVoorbeeld/"
                         }
-                    }
-                },
-                "root":true
-            },
-            "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
-            "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
-            "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
-            "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
-            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
-        },
-        "syllabus":<object id="/schema/contexts/syllabus/">{
-            "label":"syllabus",
-            "title":"Syllabus",
-            "SyllabusVakleergebied":<object id="/schema/types/SyllabusVakleergebied/">{
-                "label":"syllabus_vakleergebied",
-                "properties":{
-                    "title":<link>"/schema/properties/title/",
-                    "description":<link>"/schema/properties/description/",
-                    "id":<link>"/schema/properties/id/",
-                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                    "replaces":<link>"/schema/properties/replaces/",
-                    "unreleased":<link>"/schema/properties/unreleased/"
-                },
-                "children":{
-                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
-                }
-            },
-            "Syllabus":<object id="/schema/types/Syllabus/">{
-                "label":"syllabus",
-                "properties":{
-                    "ingangsdatum":<link>"/schema/properties/ingangsdatum/",
-                    "examenjaar":<object id="/schema/properties/examenjaar/">{
-                        "type":"string"
                     },
-                    "url":<link>"/schema/properties/url/",
-                    "versie":<link>"/schema/properties/versie/",
-                    "status":<link>"/schema/properties/status/",
-                    "jaargang":<object id="/schema/properties/jaargang/">{
-                        "type":"string"
-                    },
-                    "title":<link>"/schema/properties/title/",
-                    "description":<link>"/schema/properties/description/",
-                    "id":<link>"/schema/properties/id/",
-                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                    "replaces":<link>"/schema/properties/replaces/",
-                    "unreleased":<link>"/schema/properties/unreleased/"
-                },
-                "children":{
-                    "Niveau":<link>"/schema/types/Niveau/",
-                    "Examenprogramma":<link>"/schema/types/Examenprogramma/",
-                    "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
-                    "SyllabusSpecifiekeEindterm":<object id="/schema/types/SyllabusSpecifiekeEindterm/">{
-                        "label":"syllabus_specifieke_eindterm",
+                    "LeerlijnFocus":<object id="/schema/types/LeerlijnFocus/">{
+                        "label":"leerlijn_focus",
                         "properties":{
-                            "description":<link>"/schema/properties/description/",
-                            "ce":<link>"/schema/properties/ce/",
-                            "se":<link>"/schema/properties/se/",
-                            "prefix":<link>"/schema/properties/prefix/",
                             "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
                             "id":<link>"/schema/properties/id/",
                             "replacedBy":<link>"/schema/properties/replacedBy/",
                             "replaces":<link>"/schema/properties/replaces/",
                             "unreleased":<link>"/schema/properties/unreleased/"
                         },
                         "children":{
-                            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-                            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-                            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
-                            "SyllabusVakbegrip":<object id="/schema/types/SyllabusVakbegrip/">{
-                                "label":"syllabus_vakbegrip",
-                                "properties":{
-                                    "description":<link>"/schema/properties/description/",
-                                    "ce":<link>"/schema/properties/ce/",
-                                    "se":<link>"/schema/properties/se/",
-                                    "prefix":<link>"/schema/properties/prefix/",
-                                    "title":<link>"/schema/properties/title/",
-                                    "id":<link>"/schema/properties/id/",
-                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                    "replaces":<link>"/schema/properties/replaces/",
-                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                },
-                                "children":{
-                                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/"
-                                }
-                            },
-                            "SyllabusToelichting":<object id="/schema/types/SyllabusToelichting/">{
-                                "label":"syllabus_toelichting",
-                                "properties":{
-                                    "description":<link>"/schema/properties/description/",
-                                    "ce":<link>"/schema/properties/ce/",
-                                    "se":<link>"/schema/properties/se/",
-                                    "prefix":<link>"/schema/properties/prefix/",
-                                    "title":<link>"/schema/properties/title/",
-                                    "id":<link>"/schema/properties/id/",
-                                    "replacedBy":<link>"/schema/properties/replacedBy/",
-                                    "replaces":<link>"/schema/properties/replaces/",
-                                    "unreleased":<link>"/schema/properties/unreleased/"
-                                },
-                                "children":{
-                                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
-                                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
-                                    "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/"
-                                }
-                            }
+                            "Niveau":<link>"/schema/types/Niveau/"
                         }
-                    },
-                    "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
-                    "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/"
+                    }
                 },
                 "root":true
             },
-            "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
-            "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
-            "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/"
+            "LeerlijnFocus":<link>"/schema/types/LeerlijnFocus/",
+            "LeerlijnInhoudsblok":<link>"/schema/types/LeerlijnInhoudsblok/",
+            "LeerlijnSubinhoudsblok":<link>"/schema/types/LeerlijnSubinhoudsblok/",
+            "LeerlijnInhoudsrij":<link>"/schema/types/LeerlijnInhoudsrij/",
+            "LeerlijnInhoud":<link>"/schema/types/LeerlijnInhoud/",
+            "LeerlijnVoorbeeld":<link>"/schema/types/LeerlijnVoorbeeld/"
         },
         "examenprogramma-bg":<object id="/schema/contexts/examenprogramma-bg/">{
             "label":"examenprogramma-bg",
@@ -1090,6 +931,285 @@
             "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
             "ErkLesidee":<link>"/schema/types/ErkLesidee/"
         },
+        "kerndoelen":<object id="/schema/contexts/kerndoelen/">{
+            "label":"kerndoelen",
+            "title":"Kerndoelen (2006)",
+            "Kerndoel":<link>"/schema/types/Kerndoel/",
+            "KerndoelVakleergebied":<object id="/schema/types/KerndoelVakleergebied/">{
+                "label":"kerndoel_vakleergebied",
+                "properties":{
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Kerndoel":<link>"/schema/types/Kerndoel/",
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/",
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "KerndoelDomein":<object id="/schema/types/KerndoelDomein/">{
+                        "label":"kerndoel_domein",
+                        "properties":{
+                            "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            "Kerndoel":<link>"/schema/types/Kerndoel/"
+                        }
+                    },
+                    "KerndoelUitstroomprofiel":<object id="/schema/types/KerndoelUitstroomprofiel/">{
+                        "label":"kerndoel_uitstroomprofiel",
+                        "properties":{
+                            "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            
+                        }
+                    }
+                },
+                "root":true
+            },
+            "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
+            "KerndoelUitstroomprofiel":<link>"/schema/types/KerndoelUitstroomprofiel/"
+        },
+        "examenprogramma":<object id="/schema/contexts/examenprogramma/">{
+            "label":"examenprogramma",
+            "title":"Examenprogramma (figerend)",
+            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
+            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+            "ExamenprogrammaVakleergebied":<object id="/schema/types/ExamenprogrammaVakleergebied/">{
+                "label":"examenprogramma_vakleergebied",
+                "properties":{
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
+                }
+            },
+            "Examenprogramma":<object id="/schema/types/Examenprogramma/">{
+                "label":"examenprogramma",
+                "properties":{
+                    "ingangsdatum":<object id="/schema/properties/ingangsdatum/">{
+                        "type":"string"
+                    },
+                    "url":<object id="/schema/properties/url/">{
+                        "type":"string"
+                    },
+                    "versie":<object id="/schema/properties/versie/">{
+                        "type":"string"
+                    },
+                    "prefix":<link>"/schema/properties/prefix/",
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+                    "ExamenprogrammaVakleergebied":<link>"/schema/types/ExamenprogrammaVakleergebied/",
+                    "ExamenprogrammaKop1":<object id="/schema/types/ExamenprogrammaKop1/">{
+                        "label":"examenprogramma_kop1",
+                        "properties":{
+                            "title":<link>"/schema/properties/title/",
+                            "description":<link>"/schema/properties/description/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            "ExamenprogrammaKop2":<object id="/schema/types/ExamenprogrammaKop2/">{
+                                "label":"examenprogramma_kop2",
+                                "properties":{
+                                    "title":<link>"/schema/properties/title/",
+                                    "description":<link>"/schema/properties/description/",
+                                    "id":<link>"/schema/properties/id/",
+                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                    "replaces":<link>"/schema/properties/replaces/",
+                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                },
+                                "children":{
+                                    "ExamenprogrammaKop3":<object id="/schema/types/ExamenprogrammaKop3/">{
+                                        "label":"examenprogramma_kop3",
+                                        "properties":{
+                                            "title":<link>"/schema/properties/title/",
+                                            "description":<link>"/schema/properties/description/",
+                                            "id":<link>"/schema/properties/id/",
+                                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                                            "replaces":<link>"/schema/properties/replaces/",
+                                            "unreleased":<link>"/schema/properties/unreleased/"
+                                        },
+                                        "children":{
+                                            "ExamenprogrammaKop4":<object id="/schema/types/ExamenprogrammaKop4/">{
+                                                "label":"examenprogramma_kop4",
+                                                "properties":{
+                                                    "title":<link>"/schema/properties/title/",
+                                                    "description":<link>"/schema/properties/description/",
+                                                    "id":<link>"/schema/properties/id/",
+                                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                                    "replaces":<link>"/schema/properties/replaces/",
+                                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                                },
+                                                "children":{
+                                                    "ExamenprogrammaBody":<object id="/schema/types/ExamenprogrammaBody/">{
+                                                        "label":"examenprogramma_body",
+                                                        "properties":{
+                                                            "title":<link>"/schema/properties/title/",
+                                                            "description":<link>"/schema/properties/description/",
+                                                            "id":<link>"/schema/properties/id/",
+                                                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                                                            "replaces":<link>"/schema/properties/replaces/",
+                                                            "unreleased":<link>"/schema/properties/unreleased/"
+                                                        },
+                                                        "children":{
+                                                            
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                                        }
+                                    },
+                                    "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                                }
+                            },
+                            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+                        }
+                    }
+                },
+                "root":true
+            },
+            "ExamenprogrammaKop1":<link>"/schema/types/ExamenprogrammaKop1/",
+            "ExamenprogrammaKop2":<link>"/schema/types/ExamenprogrammaKop2/",
+            "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
+            "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
+            "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/"
+        },
+        "syllabus":<object id="/schema/contexts/syllabus/">{
+            "label":"syllabus",
+            "title":"Syllabus (tot 2024)",
+            "SyllabusVakleergebied":<object id="/schema/types/SyllabusVakleergebied/">{
+                "label":"syllabus_vakleergebied",
+                "properties":{
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Vakleergebied":<link>"/schema/types/Vakleergebied/"
+                }
+            },
+            "Syllabus":<object id="/schema/types/Syllabus/">{
+                "label":"syllabus",
+                "properties":{
+                    "ingangsdatum":<link>"/schema/properties/ingangsdatum/",
+                    "examenjaar":<object id="/schema/properties/examenjaar/">{
+                        "type":"string"
+                    },
+                    "url":<link>"/schema/properties/url/",
+                    "versie":<link>"/schema/properties/versie/",
+                    "status":<link>"/schema/properties/status/",
+                    "jaargang":<object id="/schema/properties/jaargang/">{
+                        "type":"string"
+                    },
+                    "title":<link>"/schema/properties/title/",
+                    "description":<link>"/schema/properties/description/",
+                    "id":<link>"/schema/properties/id/",
+                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                    "replaces":<link>"/schema/properties/replaces/",
+                    "unreleased":<link>"/schema/properties/unreleased/"
+                },
+                "children":{
+                    "Niveau":<link>"/schema/types/Niveau/",
+                    "Examenprogramma":<link>"/schema/types/Examenprogramma/",
+                    "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
+                    "SyllabusSpecifiekeEindterm":<object id="/schema/types/SyllabusSpecifiekeEindterm/">{
+                        "label":"syllabus_specifieke_eindterm",
+                        "properties":{
+                            "description":<link>"/schema/properties/description/",
+                            "ce":<link>"/schema/properties/ce/",
+                            "se":<link>"/schema/properties/se/",
+                            "prefix":<link>"/schema/properties/prefix/",
+                            "title":<link>"/schema/properties/title/",
+                            "id":<link>"/schema/properties/id/",
+                            "replacedBy":<link>"/schema/properties/replacedBy/",
+                            "replaces":<link>"/schema/properties/replaces/",
+                            "unreleased":<link>"/schema/properties/unreleased/"
+                        },
+                        "children":{
+                            "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+                            "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+                            "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/",
+                            "SyllabusVakbegrip":<object id="/schema/types/SyllabusVakbegrip/">{
+                                "label":"syllabus_vakbegrip",
+                                "properties":{
+                                    "description":<link>"/schema/properties/description/",
+                                    "ce":<link>"/schema/properties/ce/",
+                                    "se":<link>"/schema/properties/se/",
+                                    "prefix":<link>"/schema/properties/prefix/",
+                                    "title":<link>"/schema/properties/title/",
+                                    "id":<link>"/schema/properties/id/",
+                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                    "replaces":<link>"/schema/properties/replaces/",
+                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                },
+                                "children":{
+                                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/"
+                                }
+                            },
+                            "SyllabusToelichting":<object id="/schema/types/SyllabusToelichting/">{
+                                "label":"syllabus_toelichting",
+                                "properties":{
+                                    "description":<link>"/schema/properties/description/",
+                                    "ce":<link>"/schema/properties/ce/",
+                                    "se":<link>"/schema/properties/se/",
+                                    "prefix":<link>"/schema/properties/prefix/",
+                                    "title":<link>"/schema/properties/title/",
+                                    "id":<link>"/schema/properties/id/",
+                                    "replacedBy":<link>"/schema/properties/replacedBy/",
+                                    "replaces":<link>"/schema/properties/replaces/",
+                                    "unreleased":<link>"/schema/properties/unreleased/"
+                                },
+                                "children":{
+                                    "ExamenprogrammaEindterm":<link>"/schema/types/ExamenprogrammaEindterm/",
+                                    "ExamenprogrammaDomein":<link>"/schema/types/ExamenprogrammaDomein/",
+                                    "ExamenprogrammaSubdomein":<link>"/schema/types/ExamenprogrammaSubdomein/"
+                                }
+                            }
+                        }
+                    },
+                    "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
+                    "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/"
+                },
+                "root":true
+            },
+            "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
+            "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
+            "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/"
+        },
         "leerdoelenkaarten":<object id="/schema/contexts/leerdoelenkaarten/">{
             "label":"leerdoelenkaarten",
             "title":"Leerdoelenkaarten",
@@ -1266,6 +1386,39 @@
         "FoDoelzin":<link>"/schema/types/FoDoelzin/",
         "FoUitwerking":<link>"/schema/types/FoUitwerking/",
         "FoIllustratie":<link>"/schema/types/FoIllustratie/",
+        "Leerlijn":<link>"/schema/types/Leerlijn/",
+        "LeerlijnInhoudsblok":<link>"/schema/types/LeerlijnInhoudsblok/",
+        "LeerlijnFocus":<link>"/schema/types/LeerlijnFocus/",
+        "LeerlijnSubinhoudsblok":<link>"/schema/types/LeerlijnSubinhoudsblok/",
+        "LeerlijnVoorbeeld":<link>"/schema/types/LeerlijnVoorbeeld/",
+        "LeerlijnInhoudsrij":<link>"/schema/types/LeerlijnInhoudsrij/",
+        "LeerlijnInhoud":<link>"/schema/types/LeerlijnInhoud/",
+        "ErkVakleergebied":<link>"/schema/types/ErkVakleergebied/",
+        "Doelniveau":<link>"/schema/types/Doelniveau/",
+        "ErkTaalprofiel":<link>"/schema/types/ErkTaalprofiel/",
+        "ErkTaalprofieltekst":<link>"/schema/types/ErkTaalprofieltekst/",
+        "ErkSchaal":<link>"/schema/types/ErkSchaal/",
+        "ErkGebied":<link>"/schema/types/ErkGebied/",
+        "ErkCategorie":<link>"/schema/types/ErkCategorie/",
+        "ErkTaalactiviteit":<link>"/schema/types/ErkTaalactiviteit/",
+        "ErkCandobeschrijving":<link>"/schema/types/ErkCandobeschrijving/",
+        "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
+        "ErkLesidee":<link>"/schema/types/ErkLesidee/",
+        "ExamenprogrammaBgGlobaleEindterm":<link>"/schema/types/ExamenprogrammaBgGlobaleEindterm/",
+        "ExamenprogrammaBgDeeltaak":<link>"/schema/types/ExamenprogrammaBgDeeltaak/",
+        "ExamenprogrammaBgKerndeel":<link>"/schema/types/ExamenprogrammaBgKerndeel/",
+        "ExamenprogrammaBgKeuzevaktaak":<link>"/schema/types/ExamenprogrammaBgKeuzevaktaak/",
+        "ExamenprogrammaBgModuletaak":<link>"/schema/types/ExamenprogrammaBgModuletaak/",
+        "ExamenprogrammaBgKeuzevak":<link>"/schema/types/ExamenprogrammaBgKeuzevak/",
+        "ExamenprogrammaBgModule":<link>"/schema/types/ExamenprogrammaBgModule/",
+        "ExamenprogrammaBgKern":<link>"/schema/types/ExamenprogrammaBgKern/",
+        "ExamenprogrammaBgProfiel":<link>"/schema/types/ExamenprogrammaBgProfiel/",
+        "RefVakleergebied":<link>"/schema/types/RefVakleergebied/",
+        "RefDomein":<link>"/schema/types/RefDomein/",
+        "RefSubdomein":<link>"/schema/types/RefSubdomein/",
+        "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
+        "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
+        "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/",
         "Kerndoel":<link>"/schema/types/Kerndoel/",
         "KerndoelVakleergebied":<link>"/schema/types/KerndoelVakleergebied/",
         "KerndoelDomein":<link>"/schema/types/KerndoelDomein/",
@@ -1280,42 +1433,16 @@
         "ExamenprogrammaBody":<link>"/schema/types/ExamenprogrammaBody/",
         "ExamenprogrammaKop3":<link>"/schema/types/ExamenprogrammaKop3/",
         "ExamenprogrammaKop4":<link>"/schema/types/ExamenprogrammaKop4/",
-        "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
-        "Syllabus":<link>"/schema/types/Syllabus/",
-        "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
-        "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
-        "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/",
-        "ExamenprogrammaBgGlobaleEindterm":<link>"/schema/types/ExamenprogrammaBgGlobaleEindterm/",
-        "ExamenprogrammaBgDeeltaak":<link>"/schema/types/ExamenprogrammaBgDeeltaak/",
-        "ExamenprogrammaBgKerndeel":<link>"/schema/types/ExamenprogrammaBgKerndeel/",
-        "ExamenprogrammaBgKeuzevaktaak":<link>"/schema/types/ExamenprogrammaBgKeuzevaktaak/",
-        "ExamenprogrammaBgModuletaak":<link>"/schema/types/ExamenprogrammaBgModuletaak/",
-        "ExamenprogrammaBgKeuzevak":<link>"/schema/types/ExamenprogrammaBgKeuzevak/",
-        "ExamenprogrammaBgModule":<link>"/schema/types/ExamenprogrammaBgModule/",
-        "ExamenprogrammaBgKern":<link>"/schema/types/ExamenprogrammaBgKern/",
-        "ExamenprogrammaBgProfiel":<link>"/schema/types/ExamenprogrammaBgProfiel/",
-        "RefVakleergebied":<link>"/schema/types/RefVakleergebied/",
-        "RefDomein":<link>"/schema/types/RefDomein/",
-        "Doelniveau":<link>"/schema/types/Doelniveau/",
-        "RefSubdomein":<link>"/schema/types/RefSubdomein/",
-        "RefOnderwerp":<link>"/schema/types/RefOnderwerp/",
-        "RefDeelonderwerp":<link>"/schema/types/RefDeelonderwerp/",
-        "RefTekstkenmerk":<link>"/schema/types/RefTekstkenmerk/",
-        "ErkVakleergebied":<link>"/schema/types/ErkVakleergebied/",
-        "ErkTaalprofiel":<link>"/schema/types/ErkTaalprofiel/",
-        "ErkTaalprofieltekst":<link>"/schema/types/ErkTaalprofieltekst/",
-        "ErkSchaal":<link>"/schema/types/ErkSchaal/",
-        "ErkGebied":<link>"/schema/types/ErkGebied/",
-        "ErkCategorie":<link>"/schema/types/ErkCategorie/",
-        "ErkTaalactiviteit":<link>"/schema/types/ErkTaalactiviteit/",
-        "ErkCandobeschrijving":<link>"/schema/types/ErkCandobeschrijving/",
-        "ErkVoorbeeld":<link>"/schema/types/ErkVoorbeeld/",
-        "ErkLesidee":<link>"/schema/types/ErkLesidee/",
         "LdkVakleergebied":<link>"/schema/types/LdkVakleergebied/",
         "LdkVakkern":<link>"/schema/types/LdkVakkern/",
         "LdkVaksubkern":<link>"/schema/types/LdkVaksubkern/",
         "LdkVakinhoud":<link>"/schema/types/LdkVakinhoud/",
         "LdkVakbegrip":<link>"/schema/types/LdkVakbegrip/",
+        "SyllabusVakleergebied":<link>"/schema/types/SyllabusVakleergebied/",
+        "Syllabus":<link>"/schema/types/Syllabus/",
+        "SyllabusSpecifiekeEindterm":<link>"/schema/types/SyllabusSpecifiekeEindterm/",
+        "SyllabusToelichting":<link>"/schema/types/SyllabusToelichting/",
+        "SyllabusVakbegrip":<link>"/schema/types/SyllabusVakbegrip/",
         "InhVakleergebied":<link>"/schema/types/InhVakleergebied/",
         "InhInhoudslijn":<link>"/schema/types/InhInhoudslijn/",
         "InhCluster":<link>"/schema/types/InhCluster/",
@@ -1339,18 +1466,19 @@
         "soort":<link>"/schema/properties/soort/",
         "ce":<link>"/schema/properties/ce/",
         "se":<link>"/schema/properties/se/",
+        "doeltype":<link>"/schema/properties/doeltype/",
+        "category":<link>"/schema/properties/category/",
+        "algemeen":<link>"/schema/properties/algemeen/",
+        "isempty":<link>"/schema/properties/isempty/",
         "kerndoelLabel":<link>"/schema/properties/kerndoelLabel/",
         "kern":<link>"/schema/properties/kern/",
         "keuze":<link>"/schema/properties/keuze/",
         "ingangsdatum":<link>"/schema/properties/ingangsdatum/",
         "url":<link>"/schema/properties/url/",
         "versie":<link>"/schema/properties/versie/",
+        "ce_se":<link>"/schema/properties/ce_se/",
         "examenjaar":<link>"/schema/properties/examenjaar/",
         "jaargang":<link>"/schema/properties/jaargang/",
-        "category":<link>"/schema/properties/category/",
-        "algemeen":<link>"/schema/properties/algemeen/",
-        "isempty":<link>"/schema/properties/isempty/",
-        "ce_se":<link>"/schema/properties/ce_se/",
         "kern_keuze":<link>"/schema/properties/kern_keuze/",
         "bron":<link>"/schema/properties/bron/",
         "aanbodid":<link>"/schema/properties/aanbodid/",
