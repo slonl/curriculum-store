@@ -1,0 +1,19 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:spiral:curriculum-store:> .
+
+project:ACC-001
+    a sd:AcceptanceEvidence ;
+    dcterms:identifier "ACC-001" ;
+    sd:repositoryPath ".spiral/acceptance/ACC-001.md" ;
+    sd:status sd:Accepted ;
+    sd:accepts [
+        a sd:ArtifactReference ;
+        sd:artifact project:REQ-001 ;
+        sd:gitCommit "9306714a35a679f413064aa6b8ac3efb5e3dd07a"
+    ] ;
+    sd:derivedFrom [
+        a sd:ArtifactReference ;
+        sd:artifact project:EVD-001 ;
+        sd:gitCommit "c051ad8bfc73e8f7521a0bbce621aa3dfb8feb47"
+    ] .
