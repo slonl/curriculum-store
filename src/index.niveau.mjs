@@ -33,36 +33,8 @@ export default {
 }
 
 function registerNiveauIndex(entity, meta) {
-    const type = JSONTag.getAttribute(entity, 'class')
-    if (!type) {
-        return
-    }
-
-    const children = meta.schema.types[type].children
-    let niveaus = []
-
-    if (entity.Niveau) {
-        niveaus.push(entity.Niveau)
-    } else if (entity.NiveauIndex && entity.NiveauIndex.length) {
-        niveaus.push(entity.NiveauIndex)
-    } else {
-        Object.keys(children).forEach(childType => {
-            if (childType === 'Vakleergebied') {
-                return
-            }
-            if (entity[childType]) {
-                niveaus.push(entity[childType].map(child => registerNiveauIndex(child, meta)))
-            }
-        })
-    }
-
-    if (niveaus.length) {
-        niveaus = flatten(niveaus)
-        if (typeof entity.NiveauIndex === 'undefined' || !entity.NiveauIndex) {
-            entity.NiveauIndex = niveaus
-        }
-    }
-
+    const niveaus = calculateNiveauIndex(entity, meta, { rebuildChildren: true })
+    setNiveauIndex(entity, niveaus, { empty: 'delete' })
     return niveaus
 }
 
@@ -81,12 +53,14 @@ function updateNiveauIndex(entity, meta) {
         return false
     }
 
-    const niveaus = entity.Niveau
-        ? entity.Niveau.slice()
-        : getNiveaus(getNiveauChildren(entity, meta))
+    const niveaus = calculateNiveauIndex(entity, meta, { rebuildChildren: false })
+
+    if (!entity.NiveauIndex && !niveaus.length) {
+        return false
+    }
 
     if (!entity.NiveauIndex || diff(niveaus, entity.NiveauIndex)) {
-        entity.NiveauIndex = niveaus
+        setNiveauIndex(entity, niveaus)
         return true
     }
 
@@ -110,18 +84,65 @@ function childrenDiff(entity, previousEntity, meta) {
     )
 }
 
-function getNiveaus(children) {
+function calculateNiveauIndex(entity, meta, { rebuildChildren }) {
+    if (!entity) {
+        return []
+    }
+
+    if (entity.Niveau) {
+        if (rebuildChildren) {
+            getNiveauChildren(entity, meta).forEach(child => {
+                registerNiveauIndex(child, meta)
+            })
+        }
+        return unique(entity.Niveau)
+    }
+
+    return getNiveaus(getNiveauChildren(entity, meta), meta, { rebuildChildren })
+}
+
+function getNiveaus(children, meta, { rebuildChildren }) {
     const niveaus = new Map()
 
     for (const child of children) {
-        if (child.NiveauIndex) {
-            for (const niveau of child.NiveauIndex) {
-                niveaus.set(key(niveau), niveau)
-            }
+        const childNiveaus = getChildNiveaus(child, meta, { rebuildChildren })
+
+        for (const niveau of childNiveaus) {
+            niveaus.set(key(niveau), niveau)
         }
     }
 
     return Array.from(niveaus.values())
+}
+
+function getChildNiveaus(child, meta, { rebuildChildren }) {
+    if (rebuildChildren || !child.NiveauIndex || child.Niveau) {
+        return registerNiveauIndex(child, meta)
+    }
+
+    return child.NiveauIndex
+}
+
+function setNiveauIndex(entity, niveaus, options = {}) {
+    if (niveaus.length) {
+        entity.NiveauIndex = niveaus
+        return
+    }
+
+    if (options.empty === 'delete') {
+        delete entity.NiveauIndex
+    } else {
+        entity.NiveauIndex = []
+    }
+}
+
+function unique(values) {
+    const result = flatten(values).reduce((result, value) => {
+        result.set(key(value), value)
+        return result
+    }, new Map())
+
+    return Array.from(result.values())
 }
 
 function diff(a = [], b = []) {

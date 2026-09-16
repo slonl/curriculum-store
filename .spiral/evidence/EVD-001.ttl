@@ -1,0 +1,14 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:spiral:curriculum-store:> .
+
+project:EVD-001
+    a sd:VerificationEvidence ;
+    dcterms:identifier "EVD-001" ;
+    sd:repositoryPath ".spiral/evidence/EVD-001.md" ;
+    sd:status sd:Accepted ;
+    sd:verifies [
+        a sd:ArtifactReference ;
+        sd:artifact project:IMP-001 ;
+        sd:gitCommit "a6f8723fd7304180f9ee96e25bbc24807c85eff2"
+    ] .

@@ -1,0 +1,14 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:spiral:curriculum-store:> .
+
+project:DES-001
+    a sd:Design ;
+    dcterms:identifier "DES-001" ;
+    sd:repositoryPath ".spiral/designs/DES-001.md" ;
+    sd:status sd:Accepted ;
+    sd:satisfies [
+        a sd:ArtifactReference ;
+        sd:artifact project:REQ-001 ;
+        sd:gitCommit "9306714a35a679f413064aa6b8ac3efb5e3dd07a"
+    ] .

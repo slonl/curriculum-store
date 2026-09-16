@@ -1,0 +1,22 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:spiral:curriculum-store:> .
+
+project:IMP-001
+    a sd:Implementation ;
+    dcterms:identifier "IMP-001" ;
+    sd:repositoryPath ".spiral/implementations/IMP-001.md" ;
+    sd:status sd:Active ;
+    sd:implementationLocation "src/index.niveau.mjs" ;
+    sd:implementationLocation "test/niveau-create-regression.mjs" ;
+    sd:implementationChangeKind sd:SemanticChange ;
+    sd:implements [
+        a sd:ArtifactReference ;
+        sd:artifact project:DES-001 ;
+        sd:gitCommit "f00b5730b57b3ceb5c7f70ab434fe788864c6357"
+    ] ;
+    sd:changeCausedBy [
+        a sd:ArtifactReference ;
+        sd:artifact project:DES-001 ;
+        sd:gitCommit "f00b5730b57b3ceb5c7f70ab434fe788864c6357"
+    ] .
