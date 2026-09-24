@@ -131,6 +131,11 @@ export default {
             } catch(e) {
                 throw new Error(e.message+' class '+JSON.stringify(type)+' '+child.id)
             }
+            // Use the stored proxy before linking roots or children. Raw
+            // self-references would otherwise serialize as a second record.
+            dataspace[type].push(child)
+            child = dataspace[type][dataspace[type].length - 1]
+
             if (root && !Array.isArray(root)) { // make sure root is always an array, if set
                 root = [root]
             }
@@ -151,9 +156,6 @@ export default {
                     child.root.push(e)
                 })
             }
-            dataspace[type].push(child)
-            let proxy = dataspace[type][dataspace[type].length-1]
-
             Object.keys(child).forEach(prop => {
                 if (Array.isArray(child[prop])) {
                     child[prop] = child[prop].map(v => {
@@ -169,7 +171,6 @@ export default {
                 }
             })
 
-            child = proxy
             meta.index.id.set('/uuid/'+child.id, child)
 
             return child
