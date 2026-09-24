@@ -1,11 +1,7 @@
 import simplystore from '@muze-nl/simplystore'
 import process from 'node:process'
 
-const datafile     = process.env.DATA_FILE || './data/data.jsontag'
-const schemaFile   = process.env.SCHEMA_FILE || './data/schema.jsontag'
-const indexFile    = process.env.INDEX_FILE || process.cwd()+'/src/index.mjs'
-const commandsFile = process.env.COMMANDS || process.cwd()+'/src/commands.mjs'
-const port         = process.env.NODE_PORT || 3000
+import options from './store-options.mjs'
 
 async function checkServerAndStart(port) {
   try {
@@ -15,14 +11,11 @@ async function checkServerAndStart(port) {
     console.log(`Not starting simplystore: something is already running on the server port: ${response.status}`);  
   } catch (error) {
     console.log('Starting simplystore');
-    simplystore.run({
-      datafile,
-      schemaFile,
-      indexFile,
-      port,
-      commandsFile,
-    }) 
+    await simplystore.run(options)
   }
 }
 
-checkServerAndStart(port)
+checkServerAndStart(options.port).catch(error => {
+  console.error(error.message)
+  process.exitCode = 1
+})

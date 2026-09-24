@@ -114,6 +114,7 @@ function defineRootProperty(entity) {
 		Object.defineProperty(entity, 'root', {
 			value: [],
 			enumerable: false,
+			configurable: true,
 			writable: true
 		})
 	}

@@ -1,17 +1,21 @@
 {
 	"name": "curriculum-store",
 	"scripts": {
-		"test": "tap test/*.mjs",
-		"start": "node src/curriculum-store.mjs",
+		"test": "tap --node-arg=--no-node-snapshot test/*.mjs",
+		"start": "node --no-node-snapshot src/curriculum-store.mjs",
 		"lint": "eslint \"src/*\"",
 		"import": "cd scripts/; node tojsontag.mjs",
+		"init-integrity": "node scripts/init-integrity.mjs",
 		"build": "node node_modules/@muze-nl/simplystore/scripts/convert.mjs data/curriculum.jsontag data/data.jsontag src/index.mjs data/schema.jsontag"
+	},
+	"engines": {
+		"node": ">=22.0.0"
 	},
 	"dependencies": {
 		"@muze-nl/jaqt": "^0.10.6",
 		"@muze-nl/jsontag": "^0.10.4",
-		"@muze-nl/od-jsontag": "^0.4.6",
-		"@muze-nl/simplystore": "^0.10.3",
+		"@muze-nl/od-jsontag": "^0.5.0",
+		"@muze-nl/simplystore": "^0.11.0",
 		"array-apply-partial-diff": "^0.1.0"
 	},
 	"devDependencies": {

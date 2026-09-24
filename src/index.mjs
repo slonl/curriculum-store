@@ -16,6 +16,9 @@ export default {
 		rootIndex.update(data, meta, changes)
 		niveauIndex.update(data, meta, changes)
 	},
+	finalize(serialized, meta, uuid = null) {
+		return index.finalize(serialized, meta, uuid)
+	},
 	load(meta, uuid=null) {
 		return index.load(meta, uuid)
 	}
