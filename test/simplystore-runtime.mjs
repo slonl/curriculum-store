@@ -91,7 +91,11 @@ tap.test('published runtime supports curriculum queries, commands and restart',
         await fs.writeFile(input, `{"RootType":[
             <object class="RootType" id="/uuid/root">{
                 "id":"root","title":"original","ChildType":[]
-            }],"ChildType":[]}`)
+            }],"ChildType":[
+                <object class="ChildType" id="/uuid/orphan">{
+                    "id":"orphan","title":"unlinked child"
+                }
+            ]}`)
         await execute(process.execPath, [path.join(repo,
             'node_modules/@muze-nl/simplystore/scripts/convert.mjs'),
         input, datafile, env.INDEX_FILE, schemaFile], options)
@@ -145,8 +149,31 @@ tap.test('published runtime supports curriculum queries, commands and restart',
                 `index.${kind}.upgrade-check.json`))).size,
             `${kind} index is persisted`)
         }
+        const deleteOrphan = JSON.stringify({
+            id: 'orphan-delete', name: 'patch', value: [{
+                name: 'deleteEntity', id: 'orphan', orphanOnly: true
+            }]
+        })
+        t.ok((await request('/command', deleteOrphan)).status < 300,
+            'orphan-only deletion is accepted')
+        for (let attempt = 0; attempt < 100; attempt++) {
+            status = await request('/command/orphan-delete')
+            if (['done', 'failed', 'unsafe'].includes(status.value.status)) {
+                break
+            }
+            await delay(50)
+        }
+        t.equal(status.value.status, 'done', JSON.stringify(status.value))
+        const orphanQuery = `[meta.index.id.get('/uuid/orphan').deleted,
+            JSONTag.getAttribute(meta.index.id.get('/uuid/orphan'), 'class')]`
+        t.same(await request('/slowquery/', orphanQuery),
+            { status: 200, value: [true, 'ChildType'] },
+            'deletion retains the object and its curriculum type')
         await stop()
         await start()
+        t.same(await request('/slowquery/', orphanQuery),
+            { status: 200, value: [true, 'ChildType'] },
+            'orphan deletion survives restart')
         t.same(await request('/query/', query), expected,
             'queries see persisted command results after restart')
     })

@@ -48,6 +48,22 @@ export default {
         }
         let errors = []
 
+        // Recheck the whole selection before changing any entity. An orphan
+        // may have been attached to a curriculum since the editor listed it.
+        for (const change of command.value) {
+            if (change.name !== 'deleteEntity' || !change.orphanOnly) {
+                continue
+            }
+            const entity = fromIndex(change.id)
+            const type = entity && JSONTag.getAttribute(entity, 'class')
+            if (!entity || !meta.schema.types[type] ||
+                meta.schema.types[type].root ||
+                type === 'KerndoelUitstroomprofiel' || type === 'Deprecated' ||
+                entity.root?.length) {
+                throw new Error('Entity is no longer an orphan: ' + change.id)
+            }
+        }
+
         function missingEntries(a, b) {
             return a.filter(x => !b.includes(x))
         }
