@@ -1,0 +1,14 @@
+@prefix sd: <https://muze.nl/ns/spiral-developer#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix project: <urn:spiral:curriculum-store:> .
+
+project:EVD-20261014-7EGHR-3
+    a sd:VerificationEvidence ;
+    dcterms:identifier "EVD-20261014-7EGHR-3" ;
+    sd:repositoryPath ".spiral/evidence/EVD-20261014-7EGHR-3.md" ;
+    sd:status sd:Active ;
+    sd:verifies [
+        a sd:ArtifactReference ;
+        sd:artifact project:REQ-20261014-7EGHR-1 ;
+        sd:gitCommit "e80abbbb1d9e5732c09271a61647822234bab699"
+    ] .
