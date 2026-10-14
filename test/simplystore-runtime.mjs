@@ -121,6 +121,8 @@ tap.test('published runtime supports curriculum queries, commands and restart',
         t.equal((await request('/query/', "import('node:fs')")).status,
             422, 'query imports fail')
         const command = JSON.stringify({ id: 'upgrade-check', name: 'patch',
+            author: 'Curriculum editor',
+            message: 'Update the root and add a related object',
             value: [
                 { name: 'updateEntity', id: 'root', property: 'title',
                     prevValue: 'original', newValue: 'updated' },
@@ -138,12 +140,63 @@ tap.test('published runtime supports curriculum queries, commands and restart',
             await delay(50)
         }
         t.equal(status.value.status, 'done', JSON.stringify(status.value))
+        const historyCommand = JSON.stringify({
+            id: 'history-check', name: 'patch', author: 'History editor',
+            message: 'Revise the root title again', value: [{
+                name: 'updateEntity', id: 'root', property: 'title',
+                prevValue: 'updated', newValue: 'current'
+            }]
+        })
+        t.ok((await request('/command', historyCommand)).status < 300,
+            'second curriculum patch accepted')
+        for (let attempt = 0; attempt < 100; attempt++) {
+            status = await request('/command/history-check')
+            if (['done', 'failed', 'unsafe'].includes(status.value.status)) {
+                break
+            }
+            await delay(50)
+        }
+        t.equal(status.value.status, 'done', JSON.stringify(status.value))
         const query = `[meta.index.id.get('/uuid/root').title,
             meta.index.id.get('/uuid/new').title,
             meta.index.id.get('/uuid/new').root[0].id]`
-        const expected = { status: 200, value: ['updated', 'added', 'new'] }
+        const expected = { status: 200, value: ['current', 'added', 'new'] }
         t.same(await request('/query/', query), expected,
             'commands update IDs and curriculum root index')
+        const historyQuery = `meta.history.get(
+            meta.index.id.get('/uuid/root')).map(entry => ({
+                version: entry.version,
+                timestamp: entry.timestamp,
+                command: entry.command,
+                title: entry.object.title
+            }))`
+        const history = await request('/query/', historyQuery)
+        t.equal(history.status, 200, 'object history query succeeds')
+        t.same(history.value.map(entry => ({
+            version: entry.version,
+            command: entry.command,
+            title: entry.title
+        })), [
+            { version: 0, command: null, title: 'original' },
+            { version: 1, command: {
+                id: 'upgrade-check', name: 'patch',
+                author: 'Curriculum editor',
+                message: 'Update the root and add a related object',
+                timestamp: history.value[1].timestamp, version: 1
+            }, title: 'updated' },
+            { version: 2, command: {
+                id: 'history-check', name: 'patch', author: 'History editor',
+                message: 'Revise the root title again',
+                timestamp: history.value[2].timestamp, version: 2
+            }, title: 'current' }
+        ], 'history is oldest-first with compact command metadata')
+        for (const entry of history.value) {
+            t.match(entry.timestamp,
+                /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+                `version ${entry.version} has a dataset timestamp`)
+        }
+        t.notOk('value' in history.value[1].command,
+            'history omits original command input')
         for (const kind of ['id', 'offset']) {
             t.ok((await fs.stat(path.join(data,
                 `index.${kind}.upgrade-check.json`))).size,
@@ -176,4 +229,6 @@ tap.test('published runtime supports curriculum queries, commands and restart',
             'orphan deletion survives restart')
         t.same(await request('/query/', query), expected,
             'queries see persisted command results after restart')
+        t.same(await request('/query/', historyQuery), history,
+            'object history and metadata survive restart')
     })
