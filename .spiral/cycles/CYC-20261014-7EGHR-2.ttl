@@ -14,6 +14,6 @@ project:CYC-20261014-7EGHR-2
     sd:transforms [
         a sd:ArtifactReference ;
         sd:artifact project:CYC-20261014-7EGHR-2 ;
-        sd:gitCommit "633769c67ddc2640f66e806878fe72ea5affeb11"
+        sd:gitCommit "3f6cac6a6e627fab8cf9d9dee9d4c3d486fbd4a6"
     ] ;
     sd:status sd:Active .
