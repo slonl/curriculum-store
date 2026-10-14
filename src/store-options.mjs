@@ -13,5 +13,6 @@ export default {
         path.join(directory, 'command-log.jsontag'),
     commandStatus: process.env.COMMAND_STATUS ||
         path.join(directory, 'command-status.jsontag'),
+    queryMemoryLimit: Number(process.env.QUERY_MEMORY_LIMIT || 64),
     port: Number(process.env.NODE_PORT || 3000)
 }
