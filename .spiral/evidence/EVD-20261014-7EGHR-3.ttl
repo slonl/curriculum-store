@@ -10,10 +10,10 @@ project:EVD-20261014-7EGHR-3
     sd:transforms [
         a sd:ArtifactReference ;
         sd:artifact project:EVD-20261014-7EGHR-3 ;
-        sd:gitCommit "b133e654db6709d968aef19b8858ea2e41640aaa"
+        sd:gitCommit "e32e856c7b3a3d49f9a2a39bde4bdc5a9c99673c"
     ] ;
     sd:verifies [
         a sd:ArtifactReference ;
         sd:artifact project:REQ-20261014-7EGHR-1 ;
-        sd:gitCommit "e80abbbb1d9e5732c09271a61647822234bab699"
+        sd:gitCommit "210ca229d6249fdf4de3c531221ee0bc402fd4e5"
     ] .
