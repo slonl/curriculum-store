@@ -4,3 +4,4 @@ data/data.jsontag
 node_modules/
 command-log.jsontag
 command-status.jsontag
+.tap/
