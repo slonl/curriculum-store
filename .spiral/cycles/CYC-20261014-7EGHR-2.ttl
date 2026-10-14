@@ -14,6 +14,11 @@ project:CYC-20261014-7EGHR-2
     sd:transforms [
         a sd:ArtifactReference ;
         sd:artifact project:CYC-20261014-7EGHR-2 ;
-        sd:gitCommit "3f6cac6a6e627fab8cf9d9dee9d4c3d486fbd4a6"
+        sd:gitCommit "098d4432b1da1304282cc4af402706e0095331f8"
     ] ;
-    sd:status sd:Active .
+    sd:changeCausedBy [
+        a sd:ArtifactReference ;
+        sd:artifact project:ACC-20261014-7EGHR-4 ;
+        sd:gitCommit "3ae83b25be69807f29bc914efdf5093bc01e673e"
+    ] ;
+    sd:status sd:Accepted .
