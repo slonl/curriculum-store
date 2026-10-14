@@ -9,6 +9,11 @@ project:CYC-20261014-7EGHR-2
     sd:derivedFrom [
         a sd:ArtifactReference ;
         sd:artifact project:REQ-20261014-7EGHR-1 ;
-        sd:gitCommit "ba0a8ee822ae7c578193799758f6ff3d7cfa56d3"
+        sd:gitCommit "26c46905c8471c1357ce999b08e1aa470ef9a20e"
+    ] ;
+    sd:transforms [
+        a sd:ArtifactReference ;
+        sd:artifact project:CYC-20261014-7EGHR-2 ;
+        sd:gitCommit "633769c67ddc2640f66e806878fe72ea5affeb11"
     ] ;
     sd:status sd:Active .
