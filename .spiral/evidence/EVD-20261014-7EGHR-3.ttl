@@ -7,6 +7,11 @@ project:EVD-20261014-7EGHR-3
     dcterms:identifier "EVD-20261014-7EGHR-3" ;
     sd:repositoryPath ".spiral/evidence/EVD-20261014-7EGHR-3.md" ;
     sd:status sd:Active ;
+    sd:transforms [
+        a sd:ArtifactReference ;
+        sd:artifact project:EVD-20261014-7EGHR-3 ;
+        sd:gitCommit "b133e654db6709d968aef19b8858ea2e41640aaa"
+    ] ;
     sd:verifies [
         a sd:ArtifactReference ;
         sd:artifact project:REQ-20261014-7EGHR-1 ;
