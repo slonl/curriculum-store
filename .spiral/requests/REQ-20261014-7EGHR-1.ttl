@@ -7,4 +7,9 @@ project:REQ-20261014-7EGHR-1
     dcterms:identifier "REQ-20261014-7EGHR-1" ;
     sd:repositoryPath ".spiral/requests/REQ-20261014-7EGHR-1.md" ;
     sd:provenanceConfidence sd:Explicit ;
+    sd:transforms [
+        a sd:ArtifactReference ;
+        sd:artifact project:REQ-20261014-7EGHR-1 ;
+        sd:gitCommit "ba0a8ee822ae7c578193799758f6ff3d7cfa56d3"
+    ] ;
     sd:status sd:Active .
