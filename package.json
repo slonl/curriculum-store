@@ -1,7 +1,8 @@
 {
 	"name": "curriculum-store",
 	"scripts": {
-		"test": "tap --node-arg=--no-node-snapshot test/*.mjs",
+		"test": "tap --allow-incomplete-coverage --node-arg=--no-node-snapshot test/*.mjs",
+		"test:coverage": "tap --statements=90 --branches=90 --functions=90 --lines=90 --node-arg=--no-node-snapshot test/*.mjs",
 		"start": "node --no-node-snapshot src/curriculum-store.mjs",
 		"lint": "eslint \"src/*\"",
 		"import": "cd scripts/; node tojsontag.mjs",
